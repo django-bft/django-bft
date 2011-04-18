@@ -1,0 +1,17 @@
+{% extends "bft/base.html" %}
+
+{% block meta %}
+{% endblock %}
+
+{% block content %}
+	<div id="content-form" class="error-page">
+		<h1>Oops!</h1>
+		<h2>500 Server Error!</h2>
+		<p class="error-copy">There has been error either with your file upload or the page you have requested.</p>
+		<p class="error-copy">This error maybe related to a problem with your flash player.<br />
+		You can try the <a href="{% url noflash %}">No Flash</a> version to see that fixes the problem.</p>
+		<p class="error-copy">An email has been sent to the web administrators and hopefully should be fixed soon.<br />
+		If you have any questions about this service, please contact <a href="mailto:{{ reply_email }}">{{ reply_email }}</a>.</p>
+	</div>
+{% endblock %}
+

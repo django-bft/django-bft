@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" >
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>{{ app_name }}</title>
+	
+		<meta name="keywords" content="" />
+		<meta name="description" content="" />
+		
+		<link href="{{ STATIC_URL }}bft/styles/main.css" rel="stylesheet" type="text/css" />
+		<link href="{{ STATIC_URL }}bft/styles/jquery-ui-1.8.1.bft.css" rel="stylesheet" type="text/css" />
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js" type="text/javascript"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/jquery-ui.min.js" type="text/javascript"></script>
+		{% if show_feedback %}
+			<script type="text/javascript">
+				var feedbackURL = {{ feedback_url }};
+			</script>
+			<script src="{{ STATIC_URL }}bft/scripts/feedback.js" type="text/javascript"></script>
+		{% endif %}
+		{% block meta %}{% endblock %}
+	</head>
+
+	<body>
+		<noscript><div id="warning">Note: This site requires JavaScript enabled to function properly.</div></noscript>
+		{% if show_feedback %}
+			{% include 'bft/inc/feedback.html' %}
+		{% endif %}
+		<div id="container">
+			<div id="header"></div>
+			<div id="nav">
+				<div id="how-upload">How would you like to distribute your file?</div>
+				<div id="tabs">
+					<ul>
+						<li id="li-link">
+							<a href="{% if use_flash %}{% url index %}{% else %}{% url noflash %}{% endif %}#link" id="tab-link">Link</a>
+							<div class="nav-border link-border"><!-- --></div>
+						</li>
+						<li id="li-email">
+							<a href="{% if use_flash %}{% url index %}{% else %}{% url noflash %}{% endif %}#email" id="tab-email">Email</a>
+							<div class="nav-border"><!-- --></div>
+						</li>
+					</ul>
+				</div>
+				<div id="logo">
+					<a href="{% url index %}"><img src="{{ STATIC_URL }}bft/images/logo-bft.png" width="557" height="53" border="0" alt="Big File Transfer" /></a>
+				</div>
+			</div>
+			<div id="main">
+				<div id="content">
+					{% block content %}{% endblock %}
+				</div>
+				<div id="nav-bottom">
+					<ul>
+						<li><a href="{% url about %}">About</a></li>
+						<li><a href="{% url noflash %}">No Flash Version</a></li>
+					</ul>
+				</div>
+				<!--<div id="content-bottom"></div>-->
+			</div>			
+		</div>
+		
+		{% block script %}{% endblock %}		
+	</body>
+</html>

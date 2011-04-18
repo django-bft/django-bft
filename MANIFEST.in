@@ -1,0 +1,7 @@
+include README.rst LICENCE
+recursive-include bft *.py
+recursive-include bft/templates *
+recursive-include bft/static *
+recursive-include docs/source *
+recursive-include docs/build/html *
+include docs/Makefile

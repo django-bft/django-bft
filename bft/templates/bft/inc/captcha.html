@@ -1,0 +1,15 @@
+{% if use_captcha %}
+	<label for="recaptcha_response_field" class="section-title">Please verify by typing the words or audio below:</label>
+	<div id="recaptcha">
+		<div id="recaptcha_image"></div>
+		<div id="captcha-audio">[<a href="#">Get an audio challenge</a>]</div>
+		<div id="captcha-refresh">[<a href="#">Refresh Image</a>]</div>
+		<div><input type="text" id="recaptcha_response_field" /></div>
+	</div>
+	<div id="captcha-about">Powered by <a href="http://recaptcha.net/learnmore.html" target="_blank">reCaptcha</a></div>
+{% else %}
+	<label for="signiture" class="section-title-verify">Verify that you own the rights to the file(s) by entering your initials:</label>
+	<div id="verify">
+		<input type="text" id="signiture" />
+	</div>
+{% endif %}

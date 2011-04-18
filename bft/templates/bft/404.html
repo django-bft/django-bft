@@ -1,0 +1,15 @@
+{% extends "bft/base.html" %}
+
+{% block meta %}
+{% endblock %}
+
+{% block content %}
+	<div id="content-form" class="error-page">
+		<h1>Oops!</h1>
+		<h2>404 Page not Found!</h2>
+		<p class="error-copy">The page you have requested does not exist.<br />
+		Files uploaded are normally only available for {{ expiry_days }} days after which they are removed.<br />
+		If you have any questions about this service, please contact <a href="mailto:{{ reply_email }}">{{ reply_email }}</a></p>
+	</div>
+{% endblock %}
+
