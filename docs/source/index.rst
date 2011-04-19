@@ -149,6 +149,11 @@ To get this application up and running, please follow the steps below:
 
 		./manage.py deleteuploads
 		./manage.py deletetempfiles
-		
+
+10.	Don't forget to collect your static files and sync your database::
+
+		$ python manage.py collectstatic
+		$ python manage.py syncdb
+				
 	
 __ https://github.com/django-bft/dango-bft/downloads
