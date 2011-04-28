@@ -91,6 +91,9 @@ To get this application up and running, please follow the steps below:
 			
 	*	Add 'bft.context_processors.bft' to the context processors::
 	
+			from django.conf import global_settings
+			...
+	
 			TEMPLATE_CONTEXT_PROCESSORS = (
 			    'bft.context_processors.bft',
 			) + global_settings.TEMPLATE_CONTEXT_PROCESSORS
@@ -98,6 +101,9 @@ To get this application up and running, please follow the steps below:
 	*	Add 'bft.utils.upload_handlers.UploadProgressCachedHandler' to the file
 		upload handlers::
 	
+			from django.conf import global_settings
+			...
+			
 			FILE_UPLOAD_HANDLERS = (
 			    'bft.utils.upload_handlers.UploadProgressCachedHandler',
 			) + global_settings.FILE_UPLOAD_HANDLERS
@@ -142,18 +148,25 @@ To get this application up and running, please follow the steps below:
 		RewriteCond %{HTTPS} off
 		RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
 		
-9.	Setup a cron job to handle file archiving and deletion.  An example of this
+9.	Map your urls.py to django-bft's urls.  An example of this would be::
+
+		urlpatterns = patterns('',
+			...
+			(r'', include('bft.urls')),
+		)
+		
+10.	Setup a cron job to handle file archiving and deletion.  An example of this
 	could be::
 
 		#!/bin/sh
 
 		./manage.py deleteuploads
 		./manage.py deletetempfiles
+		
+11.	Don't forget to collect your static files and sync your database::
 
-10.	Don't forget to collect your static files and sync your database::
-
-		$ python manage.py collectstatic
 		$ python manage.py syncdb
-				
+		$ python manage.py collectstatic
+		
 	
 __ https://github.com/django-bft/dango-bft/downloads
