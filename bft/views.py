@@ -487,10 +487,14 @@ def use_captcha(request):
     """
     
     if app_settings.USE_RECAPTCHA:
-        if app_settings.RECAPTCHA_SUBNET in request.META['REMOTE_ADDR']:
+        user_subnet = '.'.join(request.META['REMOTE_ADDR'].split('.')[:2])
+        
+        if user_subnet in app_settings.RECAPTCHA_SUBNET:
             return False
         else:
             return True
+    else:
+        return False
 
 
 def html_progress(request):

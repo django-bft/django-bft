@@ -27,7 +27,9 @@ USE_FLASH = True
 
 # Captcha settings
 USE_RECAPTCHA = False
-RECAPTCHA_SUBNET = ''
+# A list of subnets to not include in captcha
+# Example:  ['172.17', 10.10']
+RECAPTCHA_SUBNET = []
 RECAPTCHA_PUB_KEY = ''
 RECAPTCHA_PRIVATE_KEY = ''
 
