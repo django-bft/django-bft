@@ -1,5 +1,5 @@
 /*
- ### jQuery Multiple File Upload Plugin v1.44 - 2009-04-08 ###
+ ### jQuery Multiple File Upload Plugin v1.47 - 2010-03-26 ###
  * Home: http://www.fyneworks.com/jquery/multiple-file-upload/
  * Code: http://code.google.com/p/jquery-multifile-plugin/
  *
@@ -104,7 +104,7 @@
        //===
        
        // APPLY CONFIGURATION
-       $.extend(MultiFile, o || {});
+							$.extend(MultiFile, o || {});
        MultiFile.STRING = $.extend({},$.fn.MultiFile.options.STRING,MultiFile.STRING);
        
        //===
@@ -131,6 +131,7 @@
        // Setup dynamic regular expression for extension validation
        // - thanks to John-Paul Bader: http://smyck.de/2006/08/11/javascript-dynamic-regular-expresions/
        if(String(MultiFile.accept).length>1){
+								MultiFile.accept = MultiFile.accept.replace(/\W+/g,'|').replace(/^\W|\W$/g,'');
         MultiFile.rxAccept = new RegExp('\\.('+(MultiFile.accept?MultiFile.accept:'')+')$','gi');
        };
        
@@ -245,7 +246,7 @@
             // Handle error
             MultiFile.error(ERROR);
 												
-            // 2007-06-24: BUG FIX - Thanks to Adrian Wróbel <adrian [dot] wrobel [at] gmail.com>
+            // 2007-06-24: BUG FIX - Thanks to Adrian Wr—bel <adrian [dot] wrobel [at] gmail.com>
             // Ditch the trouble maker and add a fresh new element
             MultiFile.n--;
             MultiFile.addSlave(newEle[0], slave_count);
@@ -392,41 +393,42 @@
    * @example $.fn.MultiFile.disableEmpty();
    * @param String class (optional) A string specifying a class to be applied to all affected elements - Default: 'mfD'.
    */
-  disableEmpty: function(klass){ klass = String(klass || 'mfD');
+  disableEmpty: function(klass){ klass = (typeof(klass)=='string'?klass:'')||'mfD';
    var o = [];
-   $('input:file').each(function(){ if($(this).val()=='') o[o.length] = this; });
+   $('input:file.MultiFile').each(function(){ if($(this).val()=='') o[o.length] = this; });
    return $(o).each(function(){ this.disabled = true }).addClass(klass);
   },
   
   
- /**
-  * This method re-enables 'empty' file elements that were disabled (and marked) with the $.fn.MultiFile.disableEmpty method.
-  *
-  * Returns a jQuery collection of all affected elements.
-  *
-  * @name reEnableEmpty
-  * @type jQuery
-  * @cat Plugins/MultiFile
-  * @author Diego A. (http://www.fyneworks.com/)
-  *
-  * @example $.fn.MultiFile.reEnableEmpty();
-  * @param String klass (optional) A string specifying the class that was used to mark affected elements - Default: 'mfD'.
-  */
-  reEnableEmpty: function(klass){ klass = String(klass || 'mfD');
+		/**
+			* This method re-enables 'empty' file elements that were disabled (and marked) with the $.fn.MultiFile.disableEmpty method.
+			*
+			* Returns a jQuery collection of all affected elements.
+			*
+			* @name reEnableEmpty
+			* @type jQuery
+			* @cat Plugins/MultiFile
+			* @author Diego A. (http://www.fyneworks.com/)
+			*
+			* @example $.fn.MultiFile.reEnableEmpty();
+			* @param String klass (optional) A string specifying the class that was used to mark affected elements - Default: 'mfD'.
+			*/
+  reEnableEmpty: function(klass){ klass = (typeof(klass)=='string'?klass:'')||'mfD';
    return $('input:file.'+klass).removeClass(klass).each(function(){ this.disabled = false });
   },
   
   
- /**
-  * This method will intercept other jQuery plugins and disable empty file input elements prior to form submission
-  *
-  * @name intercept
-  * @cat Plugins/MultiFile
-  * @author Diego A. (http://www.fyneworks.com/)
-  *
-  * @example $.fn.MultiFile.intercept();
-  * @param Array methods (optional) Array of method names to be intercepted
-  */
+		/**
+			* This method will intercept other jQuery plugins and disable empty file input elements prior to form submission
+			*
+	
+			* @name intercept
+			* @cat Plugins/MultiFile
+			* @author Diego A. (http://www.fyneworks.com/)
+			*
+			* @example $.fn.MultiFile.intercept();
+			* @param Array methods (optional) Array of method names to be intercepted
+			*/
   intercepted: {},
   intercept: function(methods, context, args){
    var method, value; args = args || [];
@@ -434,7 +436,8 @@
    if(typeof(methods)=='function'){
     $.fn.MultiFile.disableEmpty();
     value = methods.apply(context || window, args);
-    $.fn.MultiFile.reEnableEmpty();
+				//SEE-http://code.google.com/p/jquery-multifile-plugin/issues/detail?id=27
+				setTimeout(function(){ $.fn.MultiFile.reEnableEmpty() },1000);
     return value;
    };
    if(methods.constructor.toString().indexOf("Array")<0) methods = [methods];
@@ -445,12 +448,14 @@
      $.fn[method] = function(){
       $.fn.MultiFile.disableEmpty();
       value = $.fn.MultiFile.intercepted[method].apply(this, arguments);
-      $.fn.MultiFile.reEnableEmpty();
+						//SEE-http://code.google.com/p/jquery-multifile-plugin/issues/detail?id=27
+      setTimeout(function(){ $.fn.MultiFile.reEnableEmpty() },1000);
       return value;
      }; // interception
     })(method); // MAKE SURE THAT method IS ISOLATED for the interception
    };// for each method
-  }
+  } // $.fn.MultiFile.intercept
+		
  });
 	
 	/*--------------------------------------------------------*/
@@ -478,7 +483,7 @@
 		
 		// name of methods that should be automcatically intercepted so the plugin can disable
 		// extra file elements that are empty before execution and automatically re-enable them afterwards
-  autoIntercept: [ 'submit', 'ajaxSubmit', 'validate' /* array of methods to intercept */ ],
+  autoIntercept: [ 'submit', 'ajaxSubmit', 'ajaxForm', 'validate', 'valid' /* array of methods to intercept */ ],
 		
 		// error handling function
 		error: function(s){
@@ -495,9 +500,10 @@
 				});
 				window.setTimeout($.unblockUI, 3000);
 			}
-			else {// save a byte!
-				
-			}// save a byte!
+			else//{// save a byte!
+			
+			 alert(s);
+			//}// save a byte!
 		}
  }; //} });
 	
