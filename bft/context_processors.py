@@ -7,7 +7,7 @@ def bft(request):
 	abs_static_url = "http%s://%s%s" % (
 			's' if request.is_secure() else None,
 			request.META['SERVER_NAME'], 
-			settings.STATIC_URL[1:]
+			settings.STATIC_URL
 	)
 		
 	# Show the password field if RANDOM_PASS is False:
