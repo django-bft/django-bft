@@ -165,7 +165,7 @@ function initRecipientsControl() {
 }
 
 
-function initRepactchaControl() {
+function initRecaptchaControl() {
 	Recaptcha.create(captchaKey, "recaptcha", {theme:"custom"});
 
 	$("#captcha-audio").click(function(){
@@ -397,7 +397,7 @@ $(document).ready(function() {
 	//$("#noscript").remove();
 	$("#form-upload").show();
 
-	$.lightBoxFu.initialize({imagesPath: absStaticURL+'images/', stylesheetsPath: absStaticURL+'styles/'});
+	$.lightBoxFu.initialize({imagesPath: absStaticURL+'bft/images/', stylesheetsPath: absStaticURL+'bft/styles/'});
 	
 	$('body').ajaxError(function(event, XMLHttpRequest, ajaxOptions, thrownError) {
 		//reset the uploader
@@ -412,8 +412,8 @@ $(document).ready(function() {
 
 		if (window.console && window.console.log) {
 			console.log(arguments);
-			console.log(XMLHttpRequest.responseText)
 		}
+		
 		return false;
 	});
 	
