@@ -168,5 +168,15 @@ To get this application up and running, please follow the steps below:
 		$ python manage.py syncdb
 		$ python manage.py collectstatic
 		
+FAQs
+------------
+1.	Q: Running `python manage.py deleteuploads` gives an error ```AttributeError: 'Settings' object has no attribute 'BASE_DIR'```
+	
+	A: adding this to your settings.py file solves the problem::
+	
+		import os.path
+		# Assumes the settings file is located in `your_project.settings` package.
+		BASE_DIR = os.path.abspath(os.path.join(__file__, "..", ".."))
+	P.S: was tested on Django-1.4.3
 	
 __ https://github.com/django-bft/dango-bft/downloads
