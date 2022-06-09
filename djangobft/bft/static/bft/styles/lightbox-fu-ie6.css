@@ -1,0 +1,43 @@
+#lightboxfu {
+  display: none;
+}
+
+#lOverlay {
+	background: none;
+	-ieh: expression(
+		this.parsed ? 0 : (
+			img = document.createElement('div'),
+			img.id = 'ov',
+			this.parentNode.insertBefore(img, this),
+			this.parsed = 1
+		)
+	)
+}
+
+#lOverlay, #ov {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: expression(document.documentElement.clientWidth + 'px');
+	height: expression(document.documentElement.clientHeight + 'px');
+	top: expression(
+		offset = 0 + parseInt(document.body.currentStyle.paddingTop) + parseInt(document.body.currentStyle.marginTop),
+		document.documentElement.scrollTop + offset + 'px'
+  );
+}
+
+#ov {
+	background-color: #000;
+	filter: progid:DXImageTransform.Microsoft.Alpha(opacity=60);
+}
+
+#lOverlay #lWindow {
+	position: absolute;
+	top: 50%;
+}
+
+#lOverlay #lInner {
+	position: relative;
+	top: -50%;
+	height: expression(this.scrollHeight > 350 ? '350px' : 'auto' );
+}

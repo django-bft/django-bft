@@ -1,0 +1,18 @@
+{% if use_captcha %}
+	<label for="verifyme-answer" class="section-title">Please verify by answering the question below:</label>
+	<div id="captcha">
+		<div id="verifyme">
+			<div id="verifyme-question"></div>
+			<input type="text" id="verifyme-answer" name="verifyme_answer" value="" />
+			<input type="hidden" id="verifyme-questionid" name="verifyme_questionid" value="" />
+		</div>
+		<div id="captcha-refresh">[<a href="#">Refresh</a>]</div>
+		<br style="clear: right" />
+	</div>
+		
+{% else %}
+	<label for="signiture" class="section-title-verify">Verify that you own the rights to the file(s) by entering your initials:</label>
+	<div id="verify">
+		<input type="text" id="signiture" />
+	</div>
+{% endif %}

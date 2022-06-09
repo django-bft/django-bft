@@ -1,0 +1,36 @@
+#lightboxfu {
+  display: none;
+}
+
+#lOverlay {
+	background: none;
+	-ieh: expression(
+		this.parsed ? 0 : (
+			ov = document.createElement('div'),
+			ov.id = 'ov',
+			this.parentNode.insertBefore(ov, this),
+			this.parsed = 1
+		)
+	)
+}
+
+#ov {
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	background-color: #000;
+	filter: progid:DXImageTransform.Microsoft.Alpha(opacity=60);
+}
+
+#lOverlay #lWindow {
+	position: absolute;
+	top: 50%;
+}
+
+#lOverlay #lInner {
+	position: relative;
+	top: -50%;
+	height: expression(this.scrollHeight > 350 ? '350px' : 'auto' );
+}

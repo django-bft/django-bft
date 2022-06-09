@@ -1,0 +1,15 @@
+.vscode
+*.pyc
+**/*__pycache__
+local_settings.py
+node_modules
+*.db
+*.pid
+*.log
+.venv/*
+!.venv/.gitkeep
+.coverage
+.python-version
+*dist/
+tmp*
+db.sqlite3

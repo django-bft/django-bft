@@ -1,0 +1,18 @@
+<form id="login_form" action="{% url files submission_slug=submission_slug %}" method="post">
+	<h2>Authentication is required to download these file(s).</h2>
+	<p><strong>To download these files, please enter in your A-number and strong password.</strong></p>
+	{% if invalid_credentials %}
+		<div class="error">
+			Either the A-number or password typed in is invalid.  Please try again.
+		</div>
+	{% endif %}
+	<div id="auth">
+		<div class="label"><label for="anumber">Anumber:</label></div>
+		<div class="value"><input type="text" name="anumber" id="anumber" /></div>
+		<br style="clear: both" />
+		<div class="label"><label for="password">Password:</label></div>
+		<div class="value"><input type="password" name="password" id="password" /></div>
+		<br style="clear: both" />
+	</div>
+	<input type="submit" value="Submit" id="auth-submit" />
+</form>
