@@ -1,43 +1,31 @@
-from django.conf.urls.defaults import *
-import app_settings
+from django.urls import path, re_path
+from . import views, app_settings
 
-handler500 = 'bft.views.server_error'
+handler500 = views.server_error
 
-urlpatterns = patterns('bft.views',
-    url(r'^feedback/$', 'send_feedback', name='feedback'),
-    url(r'^413error/$', 'error_413', name='error413'),
-    url(r'^500error/$', 'server_error', name='error500'),
-
-    url(r'^$', 'display_index', name='index'),
-    url(r'^noflash/$', 'display_index', { 'use_flash': False }, name='noflash'),
-
-    url(r'^about/$', 'display_about', name='about'),
-    
-    url(r'^files/(?P<submission_slug>[%s]{%s})/$' % (
-        app_settings.RANDOMSLUG_CHARS, 
-        app_settings.RANDOMSLUG_CHAR_NO), 
-        'list_files', 
-        name='files'
+urlpatterns = [
+    path("feedback/", views.send_feedback, name="feedback"),
+    path("413error/", views.error_413, name="error413"),
+    path("500error/", views.server_error, name="error500"),
+    path("", views.display_index, name="index"),
+    path("about/", views.display_about, name="about"),
+    re_path(
+        r"^files/(?P<submission_slug>[%s]{%s})/$" % (app_settings.RANDOMSLUG_CHARS, app_settings.RANDOMSLUG_CHAR_NO),
+        views.list_files,
+        name="files",
     ),
-    url(r'^process/$', 'process_submission', name='process'),
-    
-    url(r'^flash/upload/$', 'upload_flash', name='flash_upload'),
-    url(r'^captcha/display/$', 'display_captcha', name='display_captcha'),
-    url(r'^captcha/submit/$', 'submit_captcha', name='submit_captcha'),
-    url(r'^progress/$', 'html_progress', name='progress'),
-
-    url(r'^bftvars.js/$', 'render_vars'),
-
-    url(r'^(?P<file_slug>[%s]{%s})/$' % (
-        app_settings.RANDOMSLUG_CHARS, 
-        app_settings.RANDOMSLUG_CHAR_NO), 
-        'get_file', 
-        name='file'
+    path("process/", views.process_submission, name="process"),
+    path("upload/", views.upload, name="upload"),
+    path("bftvars.js/", views.render_vars),
+    re_path(
+        r"^(?P<file_slug>[%s]{%s})/$" % (app_settings.RANDOMSLUG_CHARS, app_settings.RANDOMSLUG_CHAR_NO),
+        views.get_file,
+        name="file",
     ),
-    url(r'^(?P<file_slug>[%s]{%s})/(?P<file_name>.*)$' % (
-        app_settings.RANDOMSLUG_CHARS, 
-        app_settings.RANDOMSLUG_CHAR_NO), 
-        'get_file', 
-        name='file'
+    re_path(
+        r"^(?P<file_slug>[%s]{%s})/(?P<file_name>.*)$"
+        % (app_settings.RANDOMSLUG_CHARS, app_settings.RANDOMSLUG_CHAR_NO),
+        views.get_file,
+        name="file",
     ),
-)
+]

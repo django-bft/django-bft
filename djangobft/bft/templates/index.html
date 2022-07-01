@@ -1,15 +1,13 @@
+
 {% extends "base.html" %}
 
+{% load static %}
+
 {% block meta %}
-	<script src="{{ STATIC_URL }}bft/scripts/jquery.uploadify.v2.1.4.min.js" type="text/javascript"></script>
-	<script src="{{ STATIC_URL }}bft/scripts/jquery.lightBoxFu.js" type="text/javascript"></script>
-	<script src="{{ STATIC_URL }}bft/scripts/jquery.uploadProgress.js" type="text/javascript"></script>
-	<script src="{{ STATIC_URL }}bft/scripts/jquery.MultiFile.js" type="text/javascript"></script>
-	<script src="{{ STATIC_URL }}bft/scripts/jquery.blockUI.js" type="text/javascript"></script>
-	<script src="{{ STATIC_URL }}bft/scripts/swfobject.js" type="text/javascript"></script>
-	<script src="{{ STATIC_URL }}bft/scripts/jquery.form.js" type="text/javascript"></script>
-	<script src="/bftvars.js{% if not use_flash %}?noflash{% endif %}" type="text/javascript"></script>
-	<script src="{{ STATIC_URL }}bft/scripts/bft.js" type="text/javascript"></script>
+	<script src="{% static 'bft/scripts/jquery.uploadifive.js' %}" type="text/javascript"></script>
+	<script src="{% static 'bft/scripts/jquery.form.js' %}" type="text/javascript"></script>
+	<script type="text/javascript">{% include "inc/bftvars.js" %}</script>
+	<script src="{% static 'bft/scripts/bft.js' %}" type="text/javascript"></script>
 {% endblock %}
 
 {% block content %}

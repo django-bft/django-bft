@@ -5,18 +5,14 @@ from django.conf import settings
 from django.db import models
 
 from .utils.random_slug import get_random_slug
-from .validators import validate_type, validate_recipients, validate_anumbers
+from .validators import validate_type, validate_anumbers
 from . import app_settings
 
 
 class SubmissionManager(models.Manager):
     def get_expired_submissions(self):
-        datediff = datetime.today() - timedelta(
-            days=app_settings.UPLOAD_EXPIRATION_DAYS
-        )
-        submissions = Submission.objects.filter(
-            submit_date__lte=datediff, is_archived=False
-        )
+        datediff = datetime.today() - timedelta(days=app_settings.UPLOAD_EXPIRATION_DAYS)
+        submissions = Submission.objects.filter(submit_date__lte=datediff, is_archived=False)
 
         return submissions
 
@@ -26,7 +22,7 @@ class Submission(models.Model):
     slug = models.SlugField(editable=False)
     email_address = models.EmailField(max_length=255)
     anumbers = models.TextField("A-numbers", validators=[validate_anumbers], blank=True)
-    submit_ip = models.IPAddressField(editable=False, blank=True)
+    submit_ip = models.GenericIPAddressField(editable=False, blank=True, null=True)
     submit_date = models.DateTimeField(editable=False, auto_now_add=True)
     is_archived = models.BooleanField(default=False)
     email_sent = models.BooleanField(default=False)
@@ -35,7 +31,7 @@ class Submission(models.Model):
     objects = SubmissionManager()
 
     def __unicode__(self):
-        return "%s" % self.id
+        return f"{self.id}"
 
     def save(self, *args, **kwargs):
         # make sure anumbers are lowercase
@@ -56,29 +52,25 @@ class Submission(models.Model):
 class Email(Submission):
     first_name = models.CharField("First Name", max_length=50)
     last_name = models.CharField("Last Name", max_length=50)
-    recipients = models.TextField(validators=[validate_recipients])
+    recipients = models.TextField()
     message = models.TextField()
 
     def __unicode__(self):
-        return "%s" % self.id
+        return f"{self.id}"
 
 
 class File(models.Model):
-    submission = models.ForeignKey(Submission, on_delete=models.SET_NULL)
+    submission = models.ForeignKey(Submission, null=True, on_delete=models.SET_NULL)
     slug = models.SlugField(editable=False)
-    file_upload = models.FileField(
-        upload_to=app_settings.FILE_UPLOAD_DIR + "/%d-%m-%Y", max_length=500
-    )
-    file_size = models.DecimalField(
-        "File Size (MB)", editable=False, max_digits=8, decimal_places=3
-    )
+    file_upload = models.FileField(upload_to=app_settings.FILE_UPLOAD_DIR + "/%d-%m-%Y", max_length=500)
+    file_size = models.DecimalField("File Size (MB)", editable=False, max_digits=8, decimal_places=3)
 
     def __unicode__(self):
-        return "%s" % self.file_upload.name
+        return f"{self.file_upload.name}"
 
     def save(self, *args, **kwargs):
         # get the size of the file and save it to file_size for the admin
-        self.file_size = "%s" % (float(self.file_upload.size) / 1024 / 1024)
+        self.file_size = f"{(float(self.file_upload.size) / 1024 / 1024)}"
 
         # create a unique slug field
         if not self.pk:
@@ -110,21 +102,17 @@ class File(models.Model):
             return False
 
     def get_short_url(self):
-        return "/%s" % self.slug
+        return f"/{self.slug}"
 
     def get_absolute_url(self):
-        return os.path.join(
-            settings.BASE_DIR, settings.MEDIA_ROOT, self.file_upload.name
-        )
+        return os.path.join(settings.BASE_DIR, settings.MEDIA_ROOT, self.file_upload.name)
 
 
 class FileArchive(models.Model):
-    submission = models.ForeignKey(
-        Submission, editable=False, on_delete=models.SET_NULL
-    )
+    submission = models.ForeignKey(Submission, null=True, editable=False, on_delete=models.SET_NULL)
     file_upload = models.FilePathField(editable=False, max_length=500)
     submit_date = models.DateTimeField(editable=False)
     delete_date = models.DateTimeField(editable=False, auto_now_add=True)
 
     def __unicode__(self):
-        return "%s" % self.id
+        return f"{self.id}"

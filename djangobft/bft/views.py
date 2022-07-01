@@ -1,296 +1,270 @@
-from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.core.files.uploadhandler import StopUpload
 from django.core.mail import send_mail, mail_admins
-from django.core.servers.basehttp import FileWrapper
-from django.core.urlresolvers import reverse
+from wsgiref.util import FileWrapper
+from django.urls import reverse
 from django.db import transaction
-from django.http import HttpResponse, HttpResponseServerError, \
-	HttpResponseRedirect, Http404
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template import RequestContext, loader
-from django.utils import simplejson
-from djangopad.webservices.auth import AuthWebservice
-from forms import EmailForm, SubmissionForm
-from models import File, Email, Submission
+from django.http import HttpResponse, HttpResponseServerError, HttpResponseRedirect, Http404
+from django.shortcuts import render, get_object_or_404
+from django.template import loader
+from django.middleware.csrf import get_token
+from .forms import EmailForm, SubmissionForm
+from .models import File, Email, Submission
 from string import Template
-from utils.json_utils import JsonResponse
-import app_settings
+from . import app_settings
+import json
 import logging
 import mimetypes
 import os
 import re
-import urllib
+import math
+import ast
+
+# import ldap
 
 
-def display_index(request, use_flash=app_settings.USE_FLASH):
-	"""
-	View that displays main page.
-		
-	:Return: render_to_response
-	"""
+def display_index(request):
+    """
+    View that displays main page.
 
-	upload_limit = app_settings.MAX_UPLOAD_SIZE / 1024 / 1024 / 1024
-	data = {
-		'use_flash' : use_flash,
-		'use_captcha' : use_captcha(request),
-		'upload_limit' : upload_limit,
-		'captcha_key' : app_settings.CAPTCHA_KEY,
-	}
-	
-	return render_to_response('index.html', data, RequestContext(request))
+    :Return: render
+    """
+
+    upload_limit = app_settings.MAX_UPLOAD_SIZE / 1024 / 1024 / 1024
+    data = {
+        "upload_limit": math.floor(upload_limit),
+        "csrf_token_value": get_token(request),
+        "upload_size_limit": app_settings.MAX_UPLOAD_SIZE,
+        "app_name": app_settings.APP_NAME,
+    }
+
+    return render(request, "index.html", data)
 
 
-def display_about(request, use_flash=app_settings.USE_FLASH):
-	"""
-	View that displays about page.
-		
-	:Return: render_to_response
-	"""
-	
-	data = {
-		'use_flash' : use_flash,
-	}
-	
-	return render_to_response('about.html', data, RequestContext(request))
+def display_about(request):
+    """
+    View that displays about page.
+
+    :Return: render
+    """
+
+    data = {
+        "app_name": app_settings.APP_NAME,
+    }
+
+    return render(request, "about.html", data)
 
 
 def get_file(request, file_slug=None, file_name=None):
-	"""
-	Sends a file to the browser for download.
-		
-	:Return: HttpResponse
-	"""
-	
-	if file_slug:
-		file_obj = get_object_or_404(File, slug=file_slug)
-		
-		if not file_name:
-			return HttpResponseRedirect(
-				reverse(
-					'file',
-					kwargs={
-						'file_slug' : file_slug,
-						'file_name': os.path.basename(file_obj.file_upload.name)
-					}
-				)
-			)
-			
-		elif file_name != os.path.basename(file_obj.file_upload.name):
-			raise Http404 
-			
-		submission = Submission.objects.get(pk=file_obj.submission.pk)
-		
-		mimetype, encoding = mimetypes.guess_type(file_name) 
-		mimetype = mimetype or 'application/force-download' 
-	
-		response = HttpResponse(
-						FileWrapper(file_obj.file_upload),
-						mimetype=mimetype
-					) 
-		
-		response['Content-Length'] = file_obj.file_upload.size 
-		response["Content-Disposition"] = "attachment" 
-		if encoding: 
-			response["Content-Encoding"] = encoding 
+    """
+    Sends a file to the browser for download.
 
-		if submission.anumbers:
-			bft_auth = request.session.get('bft_auth')
-			if bft_auth and bft_auth in submission.anumbers.lower():
-				return response
-			else:
-				return HttpResponseRedirect(reverse('files', args=[submission.slug]))
-		else:
-			return response
-	else:
-		raise Http404 
+    :Return: HttpResponse
+    """
 
-def list_files(request, submission_slug=None, use_flash=app_settings.USE_FLASH):
-	"""
-	Outputs all the files for a submission.
-		
-	:Return: render_to_response
-	"""
+    if file_slug:
+        file_obj = get_object_or_404(File, slug=file_slug)
 
-	data = {
-		'use_flash' : app_settings.USE_FLASH
-	}
-	file_list = []
+        if not file_name:
+            return HttpResponseRedirect(
+                reverse(
+                    "file", kwargs={"file_slug": file_slug, "file_name": os.path.basename(file_obj.file_upload.name)}
+                )
+            )
 
-	#process login if needed
-	login(request)
+        elif file_name != os.path.basename(file_obj.file_upload.name):
+            raise Http404
 
-	if request.GET.has_key('slug') and request.GET['slug'].isalnum():
-		submission_slug = request.GET['slug']
-	elif submission_slug is None:
-		raise Http404
-	
-	data['submission_slug'] = submission_slug
-	submission = get_object_or_404(Submission, slug=submission_slug)
-	files = File.objects.filter(submission=submission)
-	
-	if files:
-		for file in files:
-			h = 'https' if request.is_secure() else 'http'
-			url = '%s://%s%s' % (h, request.META['SERVER_NAME'], file.get_short_url())
-			file_list.append(url)
-	else:
-		raise Http404 
-	
-	#send out emails	
-	if file_list and not submission.email_sent:
-		if submission.type == 'email':
-			process_sender(submission, file_list, has_email=True)
-			process_recipients(submission, file_list)
-		else:
-			process_sender(submission, file_list)
-		
-		#emails have been send, flag to not send again.
-		submission.email_sent = True
-		submission.save()
-	
-	if submission.anumbers:
-		bft_auth = request.session.get('bft_auth')
-		if bft_auth and bft_auth in submission.anumbers.lower():
-			data['files'] = file_list
-			return render_to_response("files.html", data, RequestContext(request))
-		elif request.POST and request.POST.has_key('anumber'):
-			data['invalid_credentials'] = True
-		
-		#return to login if not authenticated or invalid credentials
-		return render_to_response("login.html", data, RequestContext(request))
-	
-	else:
-		data['files'] = file_list
-		return render_to_response("files.html", data, RequestContext(request))
+        submission = Submission.objects.get(pk=file_obj.submission.pk)
+
+        mimetype, encoding = mimetypes.guess_type(file_name)
+        mimetype = mimetype or "application/force-download"
+
+        response = HttpResponse(FileWrapper(file_obj.file_upload), content_type=mimetype)
+
+        response["Content-Length"] = file_obj.file_upload.size
+        response["Content-Disposition"] = "attachment"
+        if encoding:
+            response["Content-Encoding"] = encoding
+
+        if submission.anumbers:
+            bft_auth = request.session.get("bft_auth")
+            if bft_auth and bft_auth in submission.anumbers.lower():
+                return response
+            else:
+                return HttpResponseRedirect(reverse("files", args=[submission.slug]))
+        else:
+            return response
+    else:
+        raise Http404
 
 
-def render_vars(request, use_flash=app_settings.USE_FLASH):
-	"""
-	Renders settings into a javascript file that can be read by the browser.
-		
-	:Return: render_to_response
-	"""
-	
-	data = {
-		'captcha_key' : app_settings.CAPTCHA_KEY,
-		'upload_size_limit' : app_settings.MAX_UPLOAD_SIZE,
-		'use_flash' : use_flash,
-		'use_captcha' : use_captcha(request),
-	}
-	
-	if 'noflash' in request.GET:
-		data['use_flash'] = False
-	
-	return render_to_response(
-				'inc/bftvars.js',
-				data,
-				RequestContext(request),
-				mimetype="text/javascript"
-			)
+def list_files(request, submission_slug=None):
+    """
+    Outputs all the files for a submission.
+
+    :Return: render
+    """
+
+    data = {}
+    file_list = []
+
+    # process login if needed
+    login_user(request)
+
+    if ("slug") in request.GET and request.GET["slug"].isalnum():
+        submission_slug = request.GET["slug"]
+    elif submission_slug is None:
+        raise Http404
+
+    data["submission_slug"] = submission_slug
+    submission = get_object_or_404(Submission, slug=submission_slug)
+    files = File.objects.filter(submission=submission)
+
+    if files:
+        for file in files:
+            h = "https" if request.is_secure() else "http"
+            url = f"{h}://{request.META['SERVER_NAME']}{file.get_short_url()}"
+            file_list.append(url)
+    else:
+        raise Http404
+
+    # send out emails
+    if file_list and not submission.email_sent:
+        if submission.type == "email":
+            process_sender(submission, file_list, has_email=True)
+            process_recipients(submission, file_list)
+        else:
+            process_sender(submission, file_list)
+
+        # emails have been send, flag to not send again.
+        submission.email_sent = True
+        submission.save()
+
+    # Remove empty strings from submission.anumbers if no a-numbers are specified or there are empty fields
+    if submission.anumbers and "" in submission.anumbers:
+        # Convert string that looks like a list to a string
+        submission.anumbers = ast.literal_eval(submission.anumbers)
+        submission.anumbers = list(filter(("").__ne__, submission.anumbers))
+
+    if submission.anumbers:
+        bft_auth = request.session.get("bft_auth")
+        if bft_auth and bft_auth in submission.anumbers.lower():
+            data["files"] = file_list
+            return render(request, "files.html", data)
+        elif request.POST and ("anumber") in request.POST:
+            data["invalid_credentials"] = True
+
+        # return to login if not authenticated or invalid credentials
+        return render(request, "login.html", data)
+
+    else:
+        data["files"] = file_list
+        return render(request, "files.html", data)
 
 
-@transaction.commit_on_success()
+def render_vars(request):
+    """
+    Renders settings into a javascript file that can be read by the browser.
+
+    :Return: render
+    """
+
+    data = {
+        "upload_size_limit": app_settings.MAX_UPLOAD_SIZE,
+    }
+
+    return render(request, "inc/bftvars.js", data, content_type="text/javascript")
+
+
+@transaction.atomic
 def process_submission(request):
-	"""
-	Processes the submission and returns back to the browser.
-		
-	:Return: HttpResponse
-	"""
-	
-	data = {
-		'error' : False,
-	}
-	
-	submission = None
-	
-	try:
-		#force the request to be ajax.
-		request.META['HTTP_X_REQUESTED_WITH'] = "XMLHttpRequest"
-		
-		if request.method == 'POST' and request.POST.has_key('type'):
-			
-			#if submission is of type email, process the email form
-			if 'email' in request.POST['type']:
-				form = EmailForm(request.POST)
-				
-			#else if submission is of type link, process the submission form
-			elif 'link' in request.POST['type']:
-				form = SubmissionForm(request.POST)
-				
-			else:
-				logging.error(
-					'Post Type Error: %s', 
-					'Incorrect Post type',
-					extra={'request':request})
-				raise ValidationError('Incorrect Post type.')
-				
-			form.instance.submit_ip = request.META['REMOTE_ADDR'] 
-			form.instance.browser_meta = "%s  %s" % \
-				(request.META['HTTP_USER_AGENT'], request.POST['flash_meta'])
+    """
+    Processes the submission and returns back to the browser.
 
-			if form.is_valid():
-				form.save()
-			else:
-				raise ValidationError(form.errors)
-				
-			submission = form.instance
-			data['submission_slug'] = submission.slug
-			
-			#process files if uploaded via html
-			upload_html(request, form.instance)
-			
-		#if no request.POST, throw error		
-		else:
-			logging.error(
-				'Post Type Error: %s', 
-				'No Post or Post type',
-				extra={'request':request})
-			raise ValidationError('No Post or Post type.')
-		
-	except StopUpload:
-		data['error'] = True
-		data['messages'] = ['The file you uploaded exceeds the allowed limit!']
+    :Return: HttpResponse
+    """
+    data = {
+        "error": False,
+    }
 
-	except IOError:
-		data['error'] = True
-		data['messages'] = [
-			'Your file upload has timed out.'
-			'  This might be due to problems with your flash player.'
-			'Please try your upload using the' 
-			'<a href="%s">No Flash</a> version.' % reverse('noflash')
-		]
+    submission = None
 
-	except ValidationError, e:
-		#delete the sumbission if there are errors.
-		#if submission:
-		#	submission.delete()
-		data['error'] = True
-		data['messages'] = e.messages
-		
-	except Exception:
-		raise
-	
-	out = "%s%s%s" % ("<textarea>", simplejson.dumps(data), "</textarea>") 
-	
-	return HttpResponse(out)
+    try:
+        # force the request to be ajax.
+        request.META["HTTP_X_REQUESTED_WITH"] = "XMLHttpRequest"
+
+        if request.method == "POST" and "type" in request.POST:
+
+            # if submission is of type email, process the email form
+            if "email" in request.POST["type"]:
+                form = EmailForm(request.POST)
+
+            # else if submission is of type link, process the submission form
+            elif "link" in request.POST["type"]:
+                form = SubmissionForm(request.POST)
+
+            else:
+                logging.error("Post Type Error: %s", "Incorrect Post type", extra={"request": request})
+                raise ValidationError("Incorrect Post type.")
+
+            form.instance.submit_ip = request.META["REMOTE_ADDR"]
+            form.instance.browser_meta = f"{request.META['HTTP_USER_AGENT']}  {request.POST['flash_meta']}"
+
+            if form.is_valid():
+                form.save()
+            else:
+                raise ValidationError(form.errors)
+
+            submission = form.instance
+            data["submission_slug"] = submission.slug
+
+        # if no request.POST, throw error
+        else:
+            logging.error("Post Type Error: %s", "No Post or Post type", extra={"request": request})
+            raise ValidationError("No Post or Post type.")
+
+    except StopUpload:
+        data["error"] = True
+        data["messages"] = ["The file you uploaded exceeds the allowed limit!"]
+
+    except IOError:
+        data["error"] = True
+        data["messages"] = [
+            "Your file upload has timed out."
+            "  This might be due to problems with your flash player."
+            "Please try your upload using the"
+            f'<a href="{reverse("noflash")}">No Flash</a> version.'
+        ]
+
+    except ValidationError as e:
+        # delete the sumbission if there are errors.
+        # if submission:
+        # 	submission.delete()
+        data["error"] = True
+        data["messages"] = e.messages
+
+    except Exception:
+        raise
+
+    out = json.dumps(data)
+
+    return HttpResponse(out)
 
 
 def process_sender(submission, files, has_email=False):
-	"""
-	Helper function that processes sender and emails them with a link(s) to their files
-	
-	:Return: Void
-	"""
-	
-	if has_email:
-		email = Email.objects.get(pk=submission)
-		str_email = (
-			'Your file(s) have also been sent to the '
-			'following recipient(s) as you requested.'
-		)
-		str_recipients = '\n'.join(email.recipients.split(','))
-		str_message = '''
+    """
+    Helper function that processes sender and emails them with a link(s) to their files
+
+    :Return: Void
+    """
+
+    if has_email:
+        email = Email.objects.get(pk=submission)
+        str_email = "Your file(s) have also been sent to the " "following recipient(s) as you requested."
+        str_recipients = "\n".join(email.recipients.split(","))
+        str_message = (
+            """
 
 
 
@@ -298,20 +272,22 @@ def process_sender(submission, files, has_email=False):
 
 %s
 
-''' % email.message
+"""
+            % email.message
+        )
 
-	else:
-		str_email = ''
-		str_recipients = ''
-		str_message = ''
-	
-	template = '''
+    else:
+        str_email = ""
+        str_recipients = ""
+        str_message = ""
+
+    template = """
 Greetings:
-	
+
 Thanks for using $appname.
 
 Your file(s) are waiting for you at:
-$files	
+$files
 
 $email
 $recipients
@@ -319,273 +295,151 @@ $message
 
 The file(s) will be available for $days days after which they will be removed. 
 To learn more visit: http://bft.usu.edu/about
-'''	
+"""
 
-	template = Template(template)
-	email_body = template.substitute(
-		files='\n'.join(files),
-		email=str_email,
-		recipients=str_recipients,
-		message=str_message,
-		days=app_settings.UPLOAD_EXPIRATION_DAYS,
-		appname=app_settings.APP_NAME	
-	)
-	
-	send_mail(
-		'[%s] A file has been sent to you' % app_settings.APP_NAME,
-		email_body, app_settings.REPLY_EMAIL,
-		[submission.email_address]
-	)
-		
-	return
+    template = Template(template)
+    email_body = template.substitute(
+        files="\n".join(files),
+        email=str_email,
+        recipients=str_recipients,
+        message=str_message,
+        days=app_settings.UPLOAD_EXPIRATION_DAYS,
+        appname=app_settings.APP_NAME,
+    )
+
+    send_mail(
+        f"[{app_settings.APP_NAME}] A file has been sent to you",
+        email_body,
+        app_settings.REPLY_EMAIL,
+        [submission.email_address],
+    )
+
+    return
+
 
 def process_recipients(submission, files):
-	"""
-	Helper function that processes recipients and emails them a link to the file(s)
-	
-	:Return: Void
-	"""
-	
-	email = Email.objects.get(pk=submission)
-	
-	template = '''
-$message	
+    """
+    Helper function that processes recipients and emails them a link to the file(s)
+
+    :Return: Void
+    """
+
+    email = Email.objects.get(pk=submission)
+
+    template = """
+$message
 
 $files
 
 ---------------------
 
 These files were sent to you by $appname service.
-The file(s) will be available for $days days after which they will be removed. 
+The file(s) will be available for $days days after which they will be removed.
 To learn more visit: http://bft.usu.edu/about
 
 This system is still in beta, and as such, please send any comments or bugs to $reply
-'''
-	template = Template(template)
-	email_body = template.substitute(
-		sender='%s %s' % (email.first_name, email.last_name),
-		sender_email=email.email_address,
-		files='\n'.join(files),
-		message=email.message,
-		reply=app_settings.REPLY_EMAIL,
-		appname=app_settings.APP_NAME,
-		days=app_settings.UPLOAD_EXPIRATION_DAYS
-	)
-	
-	send_mail(
-		'[%s] A file has been sent to you' % app_settings.APP_NAME,
-		re.sub(r'^https?:\/\/.*[\r\n]*', '[link not allowed]', email_body, flags=re.MULTILINE),
-		email.email_address,
-		email.recipients.split(',')
-	)
+"""
+    template = Template(template)
+    email_body = template.substitute(
+        sender=f"{email.first_name} {email.last_name}",
+        sender_email=email.email_address,
+        files="\n".join(files),
+        message=email.message,
+        reply=app_settings.REPLY_EMAIL,
+        appname=app_settings.APP_NAME,
+        days=app_settings.UPLOAD_EXPIRATION_DAYS,
+    )
 
-	return
+    send_mail(
+        f"[{app_settings.APP_NAME}] A file has been sent to you",
+        re.sub(r"^https?:\/\/.*[\r\n]*", "[link not allowed]", email_body, flags=re.MULTILINE),
+        email.email_address,
+        ast.literal_eval(email.recipients),
+    )
 
-def upload_html(request, submission):
-	"""
-	Helper function that processes the file upload.  Used by the 'no flash' version.
-	
-	:Return: Void
-	"""
-	
-	if request.FILES:
-		for file in request.FILES:
-			upload = File()
-			upload.submission = submission
-			upload.file_upload = request.FILES[file]
-			upload.save()
-			
-	return
+    return
 
 
-def upload_flash(request):
-	"""
-	Helper function that processes the file upload.  Used by flash player.
-	
-	:Return: HttpResponse of 0 or 1
-	"""
-	
-	try:
-		if (request.method == 'POST' and 'file_upload' 
-			in request.FILES and 'slug' in request.GET):
-			upload = File()
-			upload.file_upload = request.FILES['file_upload']
-			upload.submission = Submission.objects.get(slug=request.GET['slug'])
-			upload.save()
-			return HttpResponse(1)
-		
-		else:
-			logging.error('Flash Upload Error', extra={'request':request})
-			return HttpResponse(0)
-	
-	except StopUpload:
-		raise
+def upload(request):
+    """
+    Helper function that processes the file upload form uploadifive.
 
-	except:
-		logging.error('Flash Upload Error', extra={'request':request})
-		return HttpResponse(0)
+    :Return: HttpResponse of 0 or 1
+    """
+    try:
+        if request.method == "POST" and "file_upload" in request.FILES and "slug" in request.GET:
+            upload = File()
+            upload.file_upload = request.FILES["file_upload"]
+            upload.submission = Submission.objects.get(slug=request.GET["slug"])
+            upload.save()
+            return HttpResponse(1)
+
+        else:
+            logging.error("Upload Error", extra={"request": request})
+            return HttpResponse(0)
+
+    except StopUpload:
+        raise
+
+    except:
+        logging.error("Upload Error", extra={"request": request})
+        return HttpResponse(0)
 
 
-def display_captcha(request):
-	
-	verifyme_params = {
-	    'key' : app_settings.CAPTCHA_KEY,
-	}
+def login_user(request):
+    """
+    **USU Specific**
 
-	url = app_settings.CAPTCHA_CHALLENGE_URL + '?' + urllib.urlencode(verifyme_params)
-	data = simplejson.load(urllib.urlopen(url))
+    Processes login for USU credential by setting a session token 'bft_auth'
+    in the session scope.
 
-	return JsonResponse(data)
+    :Return: Void
+    """
 
+    # if request.POST and ("anumber") in request.POST and ("password") in request.POST:
+    #     auth = AuthWebservice()
 
-def submit_captcha(request):
-	"""
-	Function that calls Verifyme's webservice to determine if
-	correct or not.
-	
-	:Return: HttpResponse of 0 or 1
-	"""
-	data = {}
-	
-	params = {
-        'key' : app_settings.CAPTCHA_KEY,
-        'questionid' : request.POST.get('verifyme_questionid'),
-        'answer' : request.POST.get('verifyme_answer')
-	}
-	
-	url = app_settings.CAPTCHA_VERIFY_URL + '?' + urllib.urlencode(params)
-	response = simplejson.load(urllib.urlopen(url))
-	
-		
-	if response['success']:
-		data['success'] = True
-	
-	else:
-		
-		data['success'] = False
-		if response.has_key('error_code') and response['error_code'] != 200:
-			data['message'] = response['messages'][0]
-		else:
-			data['message'] = 'Invalid Response'
-			
-		logging.error(
-			'Captcha Error: %s', 
-			data['message'],
-			extra={'request':request})
-	
-	return JsonResponse(data)
+    #     user = auth.authenticate(username=request.POST["anumber"].lower(), password=request.POST["password"])
 
-		
-def use_captcha(request):
-	"""
-	Function to check whether or not to use reCaptcha.
-	
-	:Return: True or False
-	"""
-	
-	if app_settings.USE_CAPTCHA:
-		user_subnet = '.'.join(request.META['REMOTE_ADDR'].split('.')[:2])
-		
-		if user_subnet in app_settings.CAPTCHA_SUBNET_EXCLUDE:
-			return False
-		else:
-			return True
-			
-	else:
-		return False
-		
+    #     if user:
+    #         request.session["bft_auth"] = user["username"].lower()
 
-def html_progress(request):
-	"""
-	Function that is used by the 'no flash' version.
-	jQuery uses this via ajax to poll the progress at a set interval.
-	
-	:Return: JsonResponse with information about the progress of an upload.
-	"""
-	
-	progress_id = None
+    # return
 
-	if 'X-Progress-ID' in request.GET:
-		progress_id = request.GET['X-Progress-ID']
-	elif 'X-Progress-ID' in request.META:
-		progress_id = request.META['X-Progress-ID']
-
-	if progress_id:
-		cache_key = "%s_%s" % (request.META['REMOTE_ADDR'], progress_id)
-		data = cache.get(cache_key)
-		if not data:
-			data = { 'state' : 'error' }
-		elif data['state'] == 'done':
-			data = { 'state' : 'done' }
-			cache.delete(cache_key)
-	else:
-		data = {'state' : 'error'}
-		
-	return JsonResponse(data)
-
-
-def login(request):
-	"""
-	**USU Specific**
-	
-	Processes login for USU credential by setting a session token 'bft_auth'
-	in the session scope.
-	
-	:Return: Void
-	"""
-	
-	if request.POST and request.POST.has_key('anumber') and request.POST.has_key('password'):
-		auth = AuthWebservice()
-		
-		user = auth.authenticate(
-			username=request.POST['anumber'].lower(),
-			password=request.POST['password']
-		)
-		
-		if user:
-			request.session['bft_auth'] = user['username'].lower()
-			
-	return
+    # NEW LDAP STUFF WILL GO HERE
 
 
 def send_feedback(request):
-	"""
-	Processes submission from feedback forms and emails Django admins.
-	
-	:Return: HttpResponse of 0 or 1
-	"""
-	
-	if request.POST and request.POST.get('message', '') and request.POST.get('email', ''):
-		
-		mail_admins(
-			subject='[PAD User Feedback] BFT',
-			message="Feedback from the BFT Support form:\n\n%s\n\n%s" % (
-				request.POST['email'],
-				request.POST['message']
-			)
-		)
-		return HttpResponse(1)
-	else:
-		return HttpResponse(0)
+    """
+    Processes submission from feedback forms and emails Django admins.
+
+    :Return: HttpResponse of 0 or 1
+    """
+
+    if request.POST and request.POST.get("message", "") and request.POST.get("email", ""):
+
+        mail_admins(
+            subject="[PAD User Feedback] BFT",
+            message=f"Feedback from the BFT Support form:\n\n{request.POST['email']}\n\n{request.POST['message']}",
+        )
+        return HttpResponse(1)
+    else:
+        return HttpResponse(0)
 
 
 def error_413(request):
-	
-	data = {
-		'error' : True,
-		'messages' : ['The file you uploaded exceeds the allowed limit!']
-	}
-	
-	out = "%s%s%s" % ("<textarea>", simplejson.dumps(data), "</textarea>") 
-	
-	return HttpResponse(out)
+
+    data = {"error": True, "messages": ["The file you uploaded exceeds the allowed limit!"]}
+
+    out = f"{'<textarea>'}{json.dumps(data)}{'</textarea>'}"
+
+    return HttpResponse(out)
 
 
-def server_error(request, template_name='500.html'):
-	
-	logging.error('Flash Upload Error', extra={'request':request})
-	
-	t = loader.get_template(template_name)
-	return HttpResponseServerError(t.render(RequestContext(request)))
+def server_error(request, template_name="500.html"):
 
+    logging.error("Upload Error", extra={"request": request})
 
+    t = loader.get_template(template_name)
+    print(request)
+    return HttpResponseServerError(t.render)

@@ -28,6 +28,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-hw88ovvd%uxai(1tavbr_!+%kmym=e_yfvo-lp_@2fivop1cxq"
 
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -54,6 +56,11 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
 ]
 
 ROOT_URLCONF = "djangobft.urls"
@@ -119,7 +126,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "MST"
 
 USE_I18N = True
 
