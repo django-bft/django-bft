@@ -1,17 +1,21 @@
 from django.core.exceptions import ValidationError
 from django.core.files.uploadhandler import StopUpload
 from django.core.mail import send_mail, mail_admins
-from wsgiref.util import FileWrapper
 from django.urls import reverse
 from django.db import transaction
 from django.http import HttpResponse, HttpResponseServerError, HttpResponseRedirect, Http404
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.template import loader
 from django.middleware.csrf import get_token
+from django.conf import settings
+
 from .forms import EmailForm, SubmissionForm
 from .models import File, Email, Submission
+from .auth import signin
+from .app_settings import CONFIG as app_settings
+
+from wsgiref.util import FileWrapper
 from string import Template
-from . import app_settings
 import json
 import logging
 import mimetypes
@@ -110,7 +114,8 @@ def list_files(request, submission_slug=None):
     file_list = []
 
     # process login if needed
-    login_user(request)
+    if hasattr(settings, "SAML2_AUTH"):
+        login_user(request)
 
     if ("slug") in request.GET and request.GET["slug"].isalnum():
         submission_slug = request.GET["slug"]
@@ -124,7 +129,7 @@ def list_files(request, submission_slug=None):
     if files:
         for file in files:
             h = "https" if request.is_secure() else "http"
-            url = f"{h}://{request.META['SERVER_NAME']}{file.get_short_url()}"
+            url = f"{h}://{app_settings.SERVER_NAME}{file.get_short_url()}"
             file_list.append(url)
     else:
         raise Http404
@@ -148,6 +153,7 @@ def list_files(request, submission_slug=None):
         submission.anumbers = list(filter(("").__ne__, submission.anumbers))
 
     if submission.anumbers:
+        data["saml2_authority"] = app_settings.SAML2_AUTHORITY
         bft_auth = request.session.get("bft_auth")
         if bft_auth and bft_auth in submission.anumbers.lower():
             data["files"] = file_list
@@ -195,7 +201,6 @@ def process_submission(request):
         request.META["HTTP_X_REQUESTED_WITH"] = "XMLHttpRequest"
 
         if request.method == "POST" and "type" in request.POST:
-
             # if submission is of type email, process the email form
             if "email" in request.POST["type"]:
                 form = EmailForm(request.POST)
@@ -232,9 +237,8 @@ def process_submission(request):
         data["error"] = True
         data["messages"] = [
             "Your file upload has timed out."
-            "  This might be due to problems with your flash player."
-            "Please try your upload using the"
-            f'<a href="{reverse("noflash")}">No Flash</a> version.'
+            "  This might be due to problems with javascript or your network connection."
+            "Please try your again."
         ]
 
     except ValidationError as e:
@@ -281,7 +285,7 @@ def process_sender(submission, files, has_email=False):
         str_recipients = ""
         str_message = ""
 
-    template = """
+    template = f"""
 Greetings:
 
 Thanks for using $appname.
@@ -294,7 +298,7 @@ $recipients
 $message
 
 The file(s) will be available for $days days after which they will be removed. 
-To learn more visit: http://bft.usu.edu/about
+To learn more visit: https://{app_settings.SERVER_NAME}/about
 """
 
     template = Template(template)
@@ -326,7 +330,7 @@ def process_recipients(submission, files):
 
     email = Email.objects.get(pk=submission)
 
-    template = """
+    template = f"""
 $message
 
 $files
@@ -335,7 +339,7 @@ $files
 
 These files were sent to you by $appname service.
 The file(s) will be available for $days days after which they will be removed.
-To learn more visit: http://bft.usu.edu/about
+To learn more visit: https://{app_settings.SERVER_NAME}/about
 
 This system is still in beta, and as such, please send any comments or bugs to $reply
 """
@@ -381,7 +385,7 @@ def upload(request):
     except StopUpload:
         raise
 
-    except:
+    except Exception:
         logging.error("Upload Error", extra={"request": request})
         return HttpResponse(0)
 
@@ -395,7 +399,10 @@ def login_user(request):
 
     :Return: Void
     """
-
+    if hasattr(settings, "SAML2_AUTH"):
+        return signin(request)
+    else:
+        return redirect("index")
     # if request.POST and ("anumber") in request.POST and ("password") in request.POST:
     #     auth = AuthWebservice()
 
@@ -417,7 +424,6 @@ def send_feedback(request):
     """
 
     if request.POST and request.POST.get("message", "") and request.POST.get("email", ""):
-
         mail_admins(
             subject="[PAD User Feedback] BFT",
             message=f"Feedback from the BFT Support form:\n\n{request.POST['email']}\n\n{request.POST['message']}",
@@ -428,7 +434,6 @@ def send_feedback(request):
 
 
 def error_413(request):
-
     data = {"error": True, "messages": ["The file you uploaded exceeds the allowed limit!"]}
 
     out = f"{'<textarea>'}{json.dumps(data)}{'</textarea>'}"
@@ -437,7 +442,6 @@ def error_413(request):
 
 
 def server_error(request, template_name="500.html"):
-
     logging.error("Upload Error", extra={"request": request})
 
     t = loader.get_template(template_name)

@@ -1,8 +1,8 @@
-from django.conf import settings
+from ..app_settings import CONFIG as app_settings
 from random import choice
 
-RANDOMSLUG_CHARS = getattr(settings, "RANDOMSLUG_CHARS", "bcdfghjklmnpqrstvwxyz2346789")
-RANDOMSLUG_CHAR_NO = getattr(settings, "RANDOMSLUG_CHAR_NO", 5)
+RANDOMSLUG_CHARS = getattr(app_settings, "RANDOMSLUG_CHARS", "bcdfghjklmnpqrstvwxyz2346789")
+RANDOMSLUG_CHAR_NO = getattr(app_settings, "RANDOMSLUG_CHAR_NO", 5)
 
 
 def get_random_slug():

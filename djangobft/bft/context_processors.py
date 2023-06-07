@@ -1,10 +1,9 @@
-from bft import app_settings
+from bft.app_settings import CONFIG as app_settings
 from django.conf import settings
 from django.core.urlresolvers import reverse
 
 
 def bft(request):
-
     abs_static_url = f"http{'s' if request.is_secure() else ''}://{request.META['SERVER_NAME']}{settings.STATIC_URL}"
 
     return {

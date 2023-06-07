@@ -1,7 +1,8 @@
+import os
 from pathlib import Path
 
 try:
-    from local_settings import *  # @UnusedWildImport
+    from .local_settings import *  # @UnusedWildImport
 except:
     pass
 
@@ -44,6 +45,8 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",
     "http://127.0.0.1:8000",
+    "http://localhost",
+    "http://127.0.0.1",
 ]
 
 ROOT_URLCONF = "djangobft.urls"
@@ -69,8 +72,12 @@ WSGI_APPLICATION = "djangobft.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.environ.get("POSTGRES_DB"),
+        "USER": os.environ.get("POSTGRES_USER"),
+        "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
+        "HOST": "db",
+        "PORT": "5432",
     }
 }
 

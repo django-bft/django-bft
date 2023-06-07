@@ -5,9 +5,10 @@ description = "BFT for USU"
 authors = ["Your Name <you@example.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 Django = "^4.0.5"
-python-ldap = "^3.4.0"
+pysaml2 = "^7.4.1"
+psycopg2-binary = "^2.9.6"
 
 [tool.poetry.dev-dependencies]
 django-debug-toolbar = "^3.4.0"

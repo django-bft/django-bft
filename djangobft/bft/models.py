@@ -6,7 +6,7 @@ from django.db import models
 
 from .utils.random_slug import get_random_slug
 from .validators import validate_type, validate_anumbers
-from . import app_settings
+from .app_settings import CONFIG as app_settings
 
 
 class SubmissionManager(models.Manager):

@@ -1,5 +1,6 @@
 from django.urls import path, re_path
-from . import views, app_settings
+from . import views, auth
+from .app_settings import CONFIG as app_settings
 
 handler500 = views.server_error
 
@@ -9,6 +10,8 @@ urlpatterns = [
     path("500error/", views.server_error, name="error500"),
     path("", views.display_index, name="index"),
     path("about/", views.display_about, name="about"),
+    path("login/", views.login_user, name="login"),
+    path("acs/", auth.acs, name="acs"),
     re_path(
         r"^files/(?P<submission_slug>[%s]{%s})/$" % (app_settings.RANDOMSLUG_CHARS, app_settings.RANDOMSLUG_CHAR_NO),
         views.list_files,
