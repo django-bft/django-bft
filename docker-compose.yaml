@@ -1,0 +1,53 @@
+version: '3'
+services:
+  django:
+    container_name: django
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: django-bft-usu:latest
+    volumes:
+      - .:/code
+      - static_volume:/var/www/html/static
+    # ports:
+    #   - 8000:8000
+    networks:
+      - bft_network
+    env_file:
+      - .env
+    depends_on:
+      - db
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - static_volume:/code/static
+    networks:
+      - bft_network
+    depends_on:
+      - django
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+  db:
+    image: postgres:latest
+    container_name: db
+    # ports:
+    #   - "5432:5432"
+    env_file:
+      - .env
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    networks:
+      - bft_network
+
+networks:
+  bft_network:
+volumes:
+  static_volume:
