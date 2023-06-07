@@ -16,12 +16,3 @@ WORKDIR /code
 # Install project dependencies from requirements.txt
 COPY requirements.txt /code/
 RUN pip install --no-cache-dir -r requirements.txt
-
-#RUN python manage.py collectstatic --noinput
-# Run Django migrations
-RUN python manage.py migrate
-
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
-# # Copy the project code into the container
-# RUN mkdir -p /code/files
-# COPY ./djangobft /code/
