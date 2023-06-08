@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: django.Dockerfile
     command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
-    image: harbor.usu.edu/bft/django-bft:latest
+    image: ${DOCKER_IMAGE_NAME}
     volumes:
       - .:/code
       - static_volume:/var/www/html/static
