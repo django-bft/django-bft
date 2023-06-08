@@ -11,6 +11,8 @@ node_modules
 !.data/.gitkeep
 .venv/*
 !.venv/.gitkeep
+nginx/*
+!nginx/nginx.conf
 .coverage
 .python-version
 *dist/

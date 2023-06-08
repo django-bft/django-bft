@@ -8,12 +8,12 @@ CONFIG_DEFAULTS = {
     "FILE_UPLOAD_DIR": "files",
     # Do not exceed 2 GB, your web server will not like you!
     # This used on the client (flash player) to enforce size limit
-    "MAX_UPLOAD_SIZE": 4294967296,  # 1GB
+    "MAX_UPLOAD_SIZE": 1610612736,  # 1.5GB
     # This setting is used my the management commands to
     # delete files.  Follow documentation to setup a cron job for this.
     "UPLOAD_EXPIRATION_DAYS": 7,
     # General settings
-    "SERVER_NAME": "localhost",
+    "SERVER_NAME": getattr(settings, "SERVER_NAME", "localhost"),
     "APP_NAME": "USU's Big File Transfer System",
     "REPLY_EMAIL": "pad@usu.edu",
     "SAML2_AUTHORITY": "SAML2",

@@ -1,27 +1,27 @@
-import os
+import ast
 from pathlib import Path
+from decouple import config
 
-try:
-    from .local_settings import *  # @UnusedWildImport
-except:
-    pass
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+SERVER_NAME = config("SERVER_NAME", default="localhost")
+
+ADMINS = ast.literal_eval(config("ADMINS", default="[]"))
+
+ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="['*']").split(",")
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-hw88ovvd%uxai(1tavbr_!+%kmym=e_yfvo-lp_@2fivop1cxq"
+SECRET_KEY = config("SECRET_KEY", default="django-insecure-hw88ovvd%uxai(1tavbr_!+%kmym=e_yfvo-lp_@2fivop1cxq")
 
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+EMAIL_BACKEND = config("EMAIL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend")
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+EMAIL_HOST = config("EMAIL_HOST", default="localhost")
 
-ALLOWED_HOSTS = []
+DEBUG = config("DEBUG", default=False, cast=bool)
 
+CSRF_TRUSTED_ORIGINS = config("CSRF_TRUSTED_ORIGINS", default=[]).split(",")
 
 # Application definition
-
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -40,13 +40,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-]
-
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8000",
-    "http://127.0.0.1:8000",
-    "http://localhost",
-    "http://127.0.0.1",
 ]
 
 ROOT_URLCONF = "djangobft.urls"
@@ -73,9 +66,9 @@ WSGI_APPLICATION = "djangobft.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("POSTGRES_DB"),
-        "USER": os.environ.get("POSTGRES_USER"),
-        "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
+        "NAME": config("POSTGRES_DB"),
+        "USER": config("POSTGRES_USER"),
+        "PASSWORD": config("POSTGRES_PASSWORD"),
         "HOST": "db",
         "PORT": "5432",
     }

@@ -9,6 +9,8 @@ python = "^3.9"
 Django = "^4.0.5"
 pysaml2 = "^7.4.1"
 psycopg2-binary = "^2.9.6"
+python-decouple = "^3.8"
+python-dotenv = "^1.0.0"
 
 [tool.poetry.dev-dependencies]
 django-debug-toolbar = "^3.4.0"
