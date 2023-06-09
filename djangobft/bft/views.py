@@ -392,9 +392,9 @@ def upload(request):
 
 def login_user(request):
     """
-    **USU Specific**
+    **SAML2 Specific**
 
-    Processes login for USU credential by setting a session token 'bft_auth'
+    Processes login for SAML2 credential by setting a session token 'bft_auth'
     in the session scope.
 
     :Return: Void
@@ -403,17 +403,6 @@ def login_user(request):
         return signin(request)
     else:
         return redirect("index")
-    # if request.POST and ("anumber") in request.POST and ("password") in request.POST:
-    #     auth = AuthWebservice()
-
-    #     user = auth.authenticate(username=request.POST["anumber"].lower(), password=request.POST["password"])
-
-    #     if user:
-    #         request.session["bft_auth"] = user["username"].lower()
-
-    # return
-
-    # NEW LDAP STUFF WILL GO HERE
 
 
 def send_feedback(request):
@@ -425,7 +414,7 @@ def send_feedback(request):
 
     if request.POST and request.POST.get("message", "") and request.POST.get("email", ""):
         mail_admins(
-            subject="[PAD User Feedback] BFT",
+            subject="[User Feedback] BFT",
             message=f"Feedback from the BFT Support form:\n\n{request.POST['email']}\n\n{request.POST['message']}",
         )
         return HttpResponse(1)

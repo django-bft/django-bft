@@ -55,6 +55,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "djangobft.bft.context_processors.bft",
             ],
         },
     },
@@ -109,3 +110,41 @@ USE_TZ = True
 STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+SAML2_AUTH = {
+    # Metadata configuration
+    "METADATA_AUTO_CONF_URL": config("SAML2_AUTH_METADATA_URL", default=""),
+    "DEFAULT_NEXT_URL": "/",
+    # SAML authentication configuration
+    "ENTITY_ID": config("SAML2_AUTH_ENTITY_ID", default=""),
+    "NAMEID_FORMAT": "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified",
+    "CREATE_USER": True,
+    "BINDING": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect",
+    # Attribute mapping configuration
+    "ATTRIBUTES_MAP": {
+        "username": "name",
+        "email": "emailAddress",
+        "first_name": "givenName",
+        "last_name": "surname",
+    },
+}
+
+BFT = {
+    # Location of file uploads
+    # Do not put a trailing slash!
+    "FILE_UPLOAD_DIR": config("FILE_UPLOAD_DIR", default="files"),
+    # Do not exceed 2 GB, your web server will not like you!
+    # This used on the client (flash player) to enforce size limit
+    "MAX_UPLOAD_SIZE": config("MAX_UPLOAD_SIZE", default=1610612736),  # 1.5GB
+    # This setting is used my the management commands to
+    # delete files.  Follow documentation to setup a cron job for this.
+    "UPLOAD_EXPIRATION_DAYS": config("UPLOAD_EXPIRATION_DAYS", default=7),
+    # General    "SERVER_NAME": config("SERVER_NAME", "localhost"),
+    "APP_NAME": config("APP_NAME", default="Big File Transfer System"),
+    "REPLY_EMAIL": config("REPLY_EMAIL", default="bft@localhost"),
+    "SAML2_AUTHORITY": config("SAML2_AUTHORITY", default="SAML2"),
+    # Slug generator    # This is used to randomize the file and file list urls
+    "RANDOMSLUG_CHARS": config("RANDOMSLUG_CHARS", default="bcdfghjklmnpqrstvwxyz2346789"),
+    "RANDOMSLUG_CHAR_NO": config("RANDOMSLUG_CHAR_NO", default=5),
+}
