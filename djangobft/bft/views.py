@@ -114,7 +114,9 @@ def list_files(request, submission_slug=None):
     file_list = []
 
     # process login if needed
-    if hasattr(settings, "SAML2_AUTH"):
+
+    saml2_user = request.session.get("saml2_username", None)
+    if hasattr(settings, "SAML2_AUTH") and not saml2_user:
         login_user(request)
 
     if ("slug") in request.GET and request.GET["slug"].isalnum():
