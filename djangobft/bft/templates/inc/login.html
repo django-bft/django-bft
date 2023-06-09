@@ -6,5 +6,5 @@
 </div>
 {% endif %}
 <div id="steps-submit">
-	<a href="{% url 'login' %}" class="top10 text-lg">Login with {{ saml2_authority }}</a>
+	<a href="{% url 'login' %}?next={{ request.path }}" class="top10 text-lg">Login with {{ saml2_authority }}</a>
 </div>
