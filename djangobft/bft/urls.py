@@ -12,6 +12,7 @@ urlpatterns = [
     path("about/", views.display_about, name="about"),
     path("login/", views.login_user, name="login"),
     path("acs/", auth.acs, name="acs"),
+    path("denied/", auth.denied, name="denied"),
     re_path(
         r"^files/(?P<submission_slug>[%s]{%s})/$" % (app_settings.RANDOMSLUG_CHARS, app_settings.RANDOMSLUG_CHAR_NO),
         views.list_files,

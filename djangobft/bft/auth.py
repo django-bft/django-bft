@@ -28,7 +28,7 @@ def _default_next_url():
     if "DEFAULT_NEXT_URL" in settings.SAML2_AUTH:
         return settings.SAML2_AUTH["DEFAULT_NEXT_URL"]
     # Lazily evaluate this in case we don't have admin loaded.
-    return get_reverse("admin:index")
+    return get_reverse("index")
 
 
 def get_current_domain(request):
@@ -71,7 +71,7 @@ def _get_metadata():
 
 
 def _get_saml_client(domain):
-    acs_url = domain + get_reverse([acs, "acs", "core:acs"])
+    acs_url = domain + get_reverse([acs, "acs", "acs"])
     metadata = _get_metadata()
 
     saml_settings = {
@@ -118,15 +118,15 @@ def acs(request):
     next_url = request.session.get("login_next_url", _default_next_url())
 
     if not resp:
-        return HttpResponseRedirect(get_reverse([denied, "denied", "core:denied"]))
+        return HttpResponseRedirect(get_reverse([denied, "denied", "denied"]))
 
     authn_response = saml_client.parse_authn_request_response(resp, entity.BINDING_HTTP_POST)
     if authn_response is None:
-        return HttpResponseRedirect(get_reverse([denied, "denied", "core:denied"]))
+        return HttpResponseRedirect(get_reverse([denied, "denied", "denied"]))
 
     user_identity = authn_response.get_identity()
     if user_identity is None:
-        return HttpResponseRedirect(get_reverse([denied, "denied", "core:denied"]))
+        return HttpResponseRedirect(get_reverse([denied, "denied", "denied"]))
 
     user_name = user_identity[settings.SAML2_AUTH.get("ATTRIBUTES_MAP", {}).get("username", "UserName")][0]
 
@@ -153,7 +153,7 @@ def signin(request):
         url_ok = url_has_allowed_host_and_scheme(next_url)
 
     if not url_ok:
-        return HttpResponseRedirect(get_reverse([denied, "denied", "core:denied"]))
+        return HttpResponseRedirect(get_reverse([denied, "denied", "denied"]))
 
     request.session["login_next_url"] = next_url
 
