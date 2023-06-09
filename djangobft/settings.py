@@ -118,6 +118,7 @@ SAML2_AUTH = {
     "DEFAULT_NEXT_URL": "/",
     # SAML authentication configuration
     "ENTITY_ID": config("SAML2_AUTH_ENTITY_ID", default=""),
+    "ASSERTION_URL": config("SAML2_ASSERTION_URL", default=""),
     "NAMEID_FORMAT": "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified",
     "CREATE_USER": True,
     "BINDING": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect",
