@@ -1,4 +1,4 @@
-from bft.app_settings import CONFIG as app_settings
+from .app_settings import CONFIG as app_settings
 
 
 def bft(request):
