@@ -16,6 +16,7 @@ CONFIG_DEFAULTS = {
     "SERVER_NAME": getattr(settings, "SERVER_NAME", "localhost"),
     "APP_NAME": getattr(settings, "APP_NAME", "Big File Transfer System"),
     "REPLY_EMAIL": getattr(settings, "REPLY_EMAIL", "bft@localhost"),
+    "REPLY_EMAIL_NAME": getattr(settings, "REPLY_EMAIL_NAME", "Big File Transfer System"),
     "SAML2_AUTHORITY": getattr(settings, "SAML2_AUTHORITY", "SAML2"),
     # Slug generator settings
     # This is used to randomize the file and file list urls
