@@ -93,7 +93,7 @@ def get_file(request, file_slug=None, file_name=None):
 
         if submission.anumbers:
             bft_auth = request.session.get("bft_auth")
-            if bft_auth and bft_auth in submission.anumbers.lower():
+            if bft_auth and bft_auth.lower() == submission.anumbers:
                 return response
             else:
                 return HttpResponseRedirect(reverse("files", args=[submission.slug]))
@@ -115,7 +115,7 @@ def list_files(request, submission_slug=None):
 
     # process login if needed
 
-    saml2_user = request.session.get("saml2_username", None)
+    saml2_user = request.session.get("bft_auth", None)
     if hasattr(settings, "SAML2_AUTH") and not saml2_user:
         login_user(request)
 
@@ -157,7 +157,7 @@ def list_files(request, submission_slug=None):
     if submission.anumbers:
         data["saml2_authority"] = app_settings.SAML2_AUTHORITY
         bft_auth = request.session.get("bft_auth")
-        if bft_auth and bft_auth in submission.anumbers.lower():
+        if bft_auth and bft_auth.lower() in submission.anumbers:
             data["files"] = file_list
             return render(request, "files.html", data)
         elif request.POST and ("anumber") in request.POST:

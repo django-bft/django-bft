@@ -116,7 +116,8 @@ def acs(request):
     saml_client = _get_saml_client(get_current_domain(request))
     resp = request.POST.get("SAMLResponse", None)
     next_url = request.session.get("login_next_url", _default_next_url())
-
+    # If relayState params is passed, use that else consider the previous 'next_url'
+    next_url = request.POST.get('RelayState', next_url)
     if not resp:
         return HttpResponseRedirect(get_reverse([denied, "denied", "denied"]))
 
@@ -130,7 +131,7 @@ def acs(request):
 
     user_name = user_identity[settings.SAML2_AUTH.get("ATTRIBUTES_MAP", {}).get("username", "UserName")][0]
 
-    request.session["saml2_username"] = user_name
+    request.session["bft_auth"] = user_name
     return HttpResponseRedirect(next_url)
 
 
@@ -156,9 +157,8 @@ def signin(request):
         return HttpResponseRedirect(get_reverse([denied, "denied", "denied"]))
 
     request.session["login_next_url"] = next_url
-
     saml_client = _get_saml_client(get_current_domain(request))
-    _, info = saml_client.prepare_for_authenticate()
+    _, info = saml_client.prepare_for_authenticate(relay_state=next_url)
 
     redirect_url = None
 
@@ -166,7 +166,7 @@ def signin(request):
         if key == "Location":
             redirect_url = value
             break
-
+    print(f"redirect: {redirect_url}")
     return HttpResponseRedirect(redirect_url)
 
 
