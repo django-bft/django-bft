@@ -317,7 +317,7 @@ To learn more visit: https://{app_settings.SERVER_NAME}/about
         f"[{app_settings.APP_NAME}] A file has been sent to you",
         email_body,
         app_settings.REPLY_EMAIL,
-        [submission.email_address],
+        [f"{app_settings.REPLY_EMAIL_NAME} <{submission.email_address}>"],
     )
 
     return
@@ -355,6 +355,9 @@ This system is still in beta, and as such, please send any comments or bugs to $
         appname=app_settings.APP_NAME,
         days=app_settings.UPLOAD_EXPIRATION_DAYS,
     )
+
+    email_recipients = ast.literal_eval(email.recipients)
+    email_recipients = [f"{app_settings.REPLY_EMAIL_NAME} <{email_recipient}>" for email_recipient in email_recipients]
 
     send_mail(
         f"[{app_settings.APP_NAME}] A file has been sent to you",

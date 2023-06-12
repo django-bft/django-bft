@@ -46,6 +46,8 @@ class MultiValueField(fields.Field):
             try:
                 result.append(self.subfield.clean(value.lower()))
             except ValidationError as e:
+                if i > 0 and value == "":
+                    pass
                 errors.append((e.message, i, value))
         if len(errors):
             raise MultiValueValidationError(errors)
