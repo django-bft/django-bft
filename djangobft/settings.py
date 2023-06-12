@@ -147,6 +147,7 @@ BFT = {
     # General    "SERVER_NAME": config("SERVER_NAME", "localhost"),
     "APP_NAME": config("APP_NAME", default="Big File Transfer System"),
     "REPLY_EMAIL": config("REPLY_EMAIL", default="bft@localhost"),
+    "REPLY_EMAIL_NAME": config("REPLY_EMAIL_NAME", default="Big File Transfer System"),
     "SAML2_AUTHORITY": config("SAML2_AUTHORITY", default="SAML2"),
     # Slug generator    # This is used to randomize the file and file list urls
     "RANDOMSLUG_CHARS": config("RANDOMSLUG_CHARS", default="bcdfghjklmnpqrstvwxyz2346789"),
