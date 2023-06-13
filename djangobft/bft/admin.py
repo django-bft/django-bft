@@ -28,7 +28,7 @@ edit_row.short_description = "Edit"
 
 def file_url(obj):
     url = reverse("file", args=(obj.slug,))
-    return mark_safe(f'<a href="{url}{os.path.basename(obj.file_upload.name)}">{url}</a>')
+    return mark_safe(f'<a href="{url}">{url}</a>')
 
 
 file_url.short_description = "File URL"
@@ -36,7 +36,7 @@ file_url.short_description = "File URL"
 
 def submission_url(obj):
     url = reverse("files", args=(obj.slug,))
-    return mark_safe(f'<a href="{url}">{url}</a>')
+    return mark_safe(f'<a href="{url}/{os.path.basename(obj.file_upload.name)}">{url}</a>')
 
 
 submission_url.short_description = "Submission URL"
@@ -55,8 +55,10 @@ def attached_files(obj):
     if files:
         file_list = []
         for file in files:
-            file_list.append(f'<a href="/{file.slug}/{os.path.basename(file.file_upload.name)}">{file.slug}</a>')
-        return " ".join(mark_safe(file_list))
+            file_list.append(
+                mark_safe(f'<a href="/{file.slug}/{os.path.basename(file.file_upload.name)}">{file.slug}</a>')
+            )
+        return " ".join(file_list)
     else:
         return None
 
