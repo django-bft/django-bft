@@ -268,7 +268,7 @@ def process_sender(submission, files, has_email=False):
     if has_email:
         email = Email.objects.get(pk=submission)
         str_email = "Your file(s) have also been sent to the " "following recipient(s) as you requested."
-        str_recipients = "\n".join(email.recipients.split(","))
+        str_recipients = "\n".join(ast.literal_eval(email.recipients))
         str_message = (
             """
 
