@@ -46,8 +46,8 @@ services:
     #   - "5432:5432"
     env_file:
       - .env
-    # volumes:
-    #   - ./data:/var/lib/postgresql/data
+    volumes:
+      - ./data:/var/lib/postgresql/data
     networks:
       - bft_network
 

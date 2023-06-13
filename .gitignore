@@ -7,8 +7,6 @@ node_modules
 *.pid
 *.log
 .env
-.data/*
-!.data/.gitkeep
 .venv/*
 !.venv/.gitkeep
 nginx/*

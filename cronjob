@@ -1,0 +1,1 @@
+05 * * * * /code/django-bft/djangobft/filecleanup.sh
