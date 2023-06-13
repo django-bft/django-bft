@@ -5,15 +5,14 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from django.utils.safestring import mark_safe
 from .forms import EmailForm, FileForm, SubmissionForm
 from .models import Submission, Email, File, FileArchive
 import os
 
-# global callables
-
 
 def delete_row(obj):
-    return f'<a href="{obj.id}/delete">Delete</a>'
+    return mark_safe(f'<a href="{obj.id}/delete">Delete</a>')
 
 
 delete_row.allow_tags = True
@@ -21,38 +20,34 @@ delete_row.short_description = "Delete"
 
 
 def edit_row(obj):
-    return f'<a href="{obj.id}">Edit</a>'
+    return mark_safe(f'<a href="{obj.id}">Edit</a>')
 
 
 edit_row.short_description = "Edit"
-edit_row.allow_tags = True
 
 
 def file_url(obj):
     url = reverse("file", args=(obj.slug,))
-    return f'<a href="{url}{os.path.basename(obj.file_upload.name)}">{url}</a>'
+    return mark_safe(f'<a href="{url}{os.path.basename(obj.file_upload.name)}">{url}</a>')
 
 
 file_url.short_description = "File URL"
-file_url.allow_tags = True
 
 
 def submission_url(obj):
     url = reverse("files", args=(obj.slug,))
-    return f'<a href="{url}">{url}</a>'
+    return mark_safe(f'<a href="{url}">{url}</a>')
 
 
 submission_url.short_description = "Submission URL"
-submission_url.allow_tags = True
 
 
 def submission_admin_url(obj):
     url = reverse("admin:bft_submission_change", args=(obj.submission,))
-    return f'<a href="{url}">{obj.submission}</a>'
+    return mark_safe(f'<a href="{url}">{obj.submission}</a>')
 
 
 submission_admin_url.short_description = "Submission"
-submission_admin_url.allow_tags = True
 
 
 def attached_files(obj):
@@ -61,12 +56,9 @@ def attached_files(obj):
         file_list = []
         for file in files:
             file_list.append(f'<a href="/{file.slug}/{os.path.basename(file.file_upload.name)}">{file.slug}</a>')
-        return " ".join(file_list)
+        return " ".join(mark_safe(file_list))
     else:
         return None
-
-
-attached_files.allow_tags = True
 
 
 def attached_submission_date(obj):
@@ -74,8 +66,6 @@ def attached_submission_date(obj):
 
 
 attached_submission_date.short_description = "Upload Date"
-
-# inlines
 
 
 class EmailInline(admin.StackedInline):
@@ -90,7 +80,6 @@ class FileInline(admin.StackedInline):
     extra = 3
 
 
-# admin views
 class SubmissionAdmin(admin.ModelAdmin):
     class Media:
         js = (
