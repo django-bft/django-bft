@@ -30,7 +30,7 @@ class Submission(models.Model):
 
     objects = SubmissionManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return f"{self.id}"
 
     def save(self, *args, **kwargs):
@@ -48,6 +48,9 @@ class Submission(models.Model):
                     break
         super(Submission, self).save(*args, **kwargs)
 
+    class Meta:
+        app_label = "bft"
+
 
 class Email(Submission):
     first_name = models.CharField("First Name", max_length=50)
@@ -55,8 +58,11 @@ class Email(Submission):
     recipients = models.TextField()
     message = models.TextField()
 
-    def __unicode__(self):
+    def __str__(self):
         return f"{self.id}"
+
+    class Meta:
+        app_label = "bft"
 
 
 class File(models.Model):
@@ -65,7 +71,7 @@ class File(models.Model):
     file_upload = models.FileField(upload_to=app_settings.FILE_UPLOAD_DIR + "/%d-%m-%Y", max_length=500)
     file_size = models.DecimalField("File Size (MB)", editable=False, max_digits=8, decimal_places=3)
 
-    def __unicode__(self):
+    def __str__(self):
         return f"{self.file_upload.name}"
 
     def save(self, *args, **kwargs):
@@ -107,6 +113,9 @@ class File(models.Model):
     def get_absolute_url(self):
         return os.path.join(settings.BASE_DIR, settings.MEDIA_ROOT, self.file_upload.name)
 
+    class Meta:
+        app_label = "bft"
+
 
 class FileArchive(models.Model):
     submission = models.ForeignKey(Submission, null=True, editable=False, on_delete=models.SET_NULL)
@@ -114,5 +123,8 @@ class FileArchive(models.Model):
     submit_date = models.DateTimeField(editable=False)
     delete_date = models.DateTimeField(editable=False, auto_now_add=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return f"{self.id}"
+
+    class Meta:
+        app_label = "bft"
