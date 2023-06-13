@@ -1,4 +1,4 @@
 #!/bin/sh
 
-/code/djangobft/manage.py deleteuploads
-/code/djangobft/manage.py deletetempfiles
+/code/manage.py deleteuploads
+/code/manage.py deletetempfiles
