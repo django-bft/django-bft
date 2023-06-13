@@ -11,6 +11,12 @@ RUN apt-get update && \
     xmlsec1 \
     cron
 
+# Create the static directory
+RUN mkdir -p /code/static
+
+# Create the files directory
+RUN mkdir -p /code/files
+
 # Set the working directory in the container
 WORKDIR /code
 
