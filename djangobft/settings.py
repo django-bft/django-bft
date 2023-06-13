@@ -146,7 +146,8 @@ BFT = {
     "UPLOAD_EXPIRATION_DAYS": config("UPLOAD_EXPIRATION_DAYS", default=7),
     # General    "SERVER_NAME": config("SERVER_NAME", "localhost"),
     "APP_NAME": config("APP_NAME", default="Big File Transfer System"),
-    "REPLY_EMAIL": config("REPLY_EMAIL", default="bft@localhost"),
+    "FROM_EMAIL": config("FROM_EMAIL", default="noreply@localhost"),
+    "REPLY_EMAIL": config("REPLY_EMAIL", default="noreply@localhost"),
     "REPLY_EMAIL_NAME": config("REPLY_EMAIL_NAME", default="Big File Transfer System"),
     "SAML2_AUTHORITY": config("SAML2_AUTHORITY", default="SAML2"),
     # Slug generator    # This is used to randomize the file and file list urls

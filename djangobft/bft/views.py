@@ -316,8 +316,8 @@ To learn more visit: https://{app_settings.SERVER_NAME}/about
     send_mail(
         f"[{app_settings.APP_NAME}] A file has been sent to you",
         email_body,
-        app_settings.REPLY_EMAIL,
-        [f"{app_settings.REPLY_EMAIL_NAME} <{submission.email_address}>"],
+        app_settings.FROM_EMAIL,
+        [submission.email_address],
     )
 
     return
@@ -339,11 +339,11 @@ $files
 
 ---------------------
 
-These files were sent to you by $appname service.
+These files were sent to you by $sender_email via $appname service.
 The file(s) will be available for $days days after which they will be removed.
 To learn more visit: https://{app_settings.SERVER_NAME}/about
 
-This system is still in beta, and as such, please send any comments or bugs to $reply
+Please send any comments or bugs to $reply
 """
     template = Template(template)
     email_body = template.substitute(
@@ -351,18 +351,15 @@ This system is still in beta, and as such, please send any comments or bugs to $
         sender_email=email.email_address,
         files="\n".join(files),
         message=email.message,
-        reply=app_settings.REPLY_EMAIL,
+        reply=app_settings.FROM_EMAIL,
         appname=app_settings.APP_NAME,
         days=app_settings.UPLOAD_EXPIRATION_DAYS,
     )
 
-    email_recipients = ast.literal_eval(email.recipients)
-    email_recipients = [f"{app_settings.REPLY_EMAIL_NAME} <{email_recipient}>" for email_recipient in email_recipients]
-
     send_mail(
         f"[{app_settings.APP_NAME}] A file has been sent to you",
         re.sub(r"^https?:\/\/.*[\r\n]*", "[link not allowed]", email_body, flags=re.MULTILINE),
-        email.email_address,
+        f"{app_settings.REPLY_EMAIL_NAME} <{app_settings.REPLY_EMAIL}>",
         ast.literal_eval(email.recipients),
     )
 
