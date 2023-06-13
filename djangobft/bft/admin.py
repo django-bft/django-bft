@@ -1,10 +1,5 @@
-from django import forms
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
 from django.urls import reverse
-from django.utils.translation import gettext_lazy as _
 from django.utils.safestring import mark_safe
 from .forms import EmailForm, FileForm, SubmissionForm
 from .models import Submission, Email, File, FileArchive
@@ -81,12 +76,6 @@ class FileInline(admin.StackedInline):
 
 
 class SubmissionAdmin(admin.ModelAdmin):
-    class Media:
-        js = (
-            "https://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js",
-            "/static/scripts/admin.js",
-        )
-
     list_filter = ("type", "submit_date")
     search_fields = [
         "email_address",
@@ -159,74 +148,6 @@ class FileArchiveAdmin(admin.ModelAdmin):
     search_fields = ["file_upload", "submission__pk"]
 
 
-# Override of User Creation Form to check for USU A-numbers
-class ExternalUserCreationForm(UserCreationForm):
-    is_usu_credential = forms.BooleanField(
-        label=_("Is USU A-Number"),
-        initial=False,
-        required=False,
-        help_text=_("Check if this user is a USU A-Number so that local passwords will not be used."),
-    )
-
-    def _is_usu_user(self):
-        result = False
-        if ("is_usu_credential") in self.cleaned_data:
-            if ("username") in self.cleaned_data:
-                self.cleaned_data["username"] = self.cleaned_data["username"]
-            result = self.cleaned_data["is_usu_credential"]
-        return result
-
-    def clean_username(self):
-        username = super(ExternalUserCreationForm, self).clean_username()
-        return username.upper()
-
-    def clean(self):
-        cleaned_data = super(ExternalUserCreationForm, self).clean()
-        # Ignore password errors if we aren't using the password field
-        if self._is_usu_user():
-            if ("password1") in self.errors:
-                del self.errors["password1"]
-            if ("password1") in self.errors:
-                del self.errors["password2"]
-        return cleaned_data
-
-    def save(self, commit=True):
-        if self._is_usu_user():
-            user = super(UserCreationForm, self).save(commit=False)
-            user.set_unusable_password()
-            if commit:
-                user.save()
-        else:
-            user = super(ExternalUserCreationForm, self).save(commit=commit)
-        return user
-
-
-class ExtendedUserAdmin(UserAdmin):
-    # add_form_template = 'admin/auth/user/add_user.html'
-    add_form = ExternalUserCreationForm
-
-    list_display = (
-        "username",
-        "email",
-        "first_name",
-        "last_name",
-        "is_staff",
-        "is_superuser",
-    )
-
-    add_fieldsets = (
-        (
-            None,
-            {
-                "classes": ("wide",),
-                "fields": ("username", "password1", "password2", "is_usu_credential"),
-            },
-        ),
-    )
-
-
-admin.site.unregister(User)
-admin.site.register(User, ExtendedUserAdmin)
 admin.site.register(Submission, SubmissionAdmin)
 admin.site.register(File, FileAdmin)
 admin.site.register(FileArchive, FileArchiveAdmin)
