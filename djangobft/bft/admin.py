@@ -55,10 +55,8 @@ def attached_files(obj):
     if files:
         file_list = []
         for file in files:
-            file_list.append(
-                mark_safe(f'<a href="/{file.slug}/{os.path.basename(file.file_upload.name)}">{file.slug}</a>')
-            )
-        return " ".join(file_list)
+            file_list.append(f'<a href="/{file.slug}/{os.path.basename(file.file_upload.name)}">{file.slug}</a>')
+        return mark_safe(" ".join(file_list))
     else:
         return None
 
