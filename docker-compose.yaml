@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: django.Dockerfile
-    command: sh -c "python manage.py migrate && python manage.py collectstatic -l && python manage.py runserver 0.0.0.0:8000"
+    command: sh -c "python manage.py migrate && python manage.py collectstatic --no-input && python manage.py runserver 0.0.0.0:8000"
     image: ${DOCKER_IMAGE_NAME}
     volumes:
       - .:/code
