@@ -23,7 +23,7 @@ edit_row.short_description = "Edit"
 
 def file_url(obj):
     url = reverse("file", args=(obj.slug,))
-    return mark_safe(f'<a href="{url}/{os.path.basename(obj.file_upload.name)}">{url}</a>')
+    return mark_safe(f'<a href="{url}">{url}</a>')
 
 
 file_url.short_description = "File URL"
