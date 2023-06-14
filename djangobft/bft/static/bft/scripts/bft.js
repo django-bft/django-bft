@@ -49,7 +49,7 @@ function initUploadControl() {
 				$("#file-upload").uploadifive("clearQueue");
 				showErrors([uploadServerError], 'Server Error');
 			} else {
-				location.href = `/files/${submissionSlug}`;
+				location.href = `/file-list/${submissionSlug}`;
 			}
 		},
 		onProgress: function (file, event) {
