@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 
 from django.conf import settings
 from django.db import models
+from django.urls import reverse
 
 from .utils.random_slug import get_random_slug
 from .validators import validate_type, validate_anumbers
@@ -108,7 +109,7 @@ class File(models.Model):
             return False
 
     def get_short_url(self):
-        return f"/{self.slug}"
+        return reverse("file", kwargs={"file_slug": self.slug})
 
     def get_absolute_url(self):
         return os.path.join(settings.BASE_DIR, settings.MEDIA_ROOT, self.file_upload.name)
