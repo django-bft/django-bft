@@ -358,7 +358,7 @@ Please send any comments or bugs to $reply
 
     send_mail(
         f"[{app_settings.APP_NAME}] A file has been sent to you",
-        re.sub(r"^https?:\/\/.*[\r\n]*", "[link not allowed]", email_body, flags=re.MULTILINE),
+        email_body,
         f"{app_settings.REPLY_EMAIL_NAME} <{app_settings.REPLY_EMAIL}>",
         ast.literal_eval(email.recipients),
     )
