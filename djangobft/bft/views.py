@@ -316,7 +316,7 @@ To learn more visit: https://{app_settings.SERVER_NAME}/about
     send_mail(
         f"[{app_settings.APP_NAME}] A file has been sent to you",
         email_body,
-        app_settings.FROM_EMAIL,
+        f"{app_settings.REPLY_EMAIL_NAME} <{app_settings.REPLY_EMAIL}>",
         [submission.email_address],
     )
 
