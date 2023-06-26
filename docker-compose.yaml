@@ -31,6 +31,7 @@ services:
       - ./nginx/fullchain.pem:/etc/letsencrypt/live/fullchain.pem
       - ./nginx/privkey.pem:/etc/letsencrypt/live/privkey.pem
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/log:/var/log/nginx
       - ./files:/code/files
       - ./static:/code/static
     networks:
