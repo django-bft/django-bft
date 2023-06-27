@@ -38,8 +38,11 @@ class MultiValueField(fields.Field):
         self.subfield = subfield
 
     def clean(self, values):
-        if len(values) == 0 and self.required:
-            raise ValidationError(self.error_messages["required"])
+        if len(values) == 0:
+            if self.required:
+                raise ValidationError(self.error_messages["required"])
+            else:
+                return ""
         result = []
         errors = []
         for i, value in enumerate(values):

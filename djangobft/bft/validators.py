@@ -11,7 +11,6 @@ def validate_type(value):
 
 def validate_recipients(value):
     list(value.split(","))
-    assert False, type(value)
     for email in value:
         if email:
             try:
