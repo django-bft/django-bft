@@ -215,7 +215,7 @@ def process_submission(request):
                 logging.error("Post Type Error: %s", "Incorrect Post type", extra={"request": request})
                 raise ValidationError("Incorrect Post type.")
 
-            form.instance.submit_ip = request.META["REMOTE_ADDR"]
+            form.instance.submit_ip = request.META.get("HTTP_X_REAL_IP", request.META.get("REMOTE_ADDR", ""))
             form.instance.browser_meta = f"{request.META['HTTP_USER_AGENT']}  {request.POST['flash_meta']}"
 
             if form.is_valid():
