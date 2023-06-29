@@ -350,7 +350,7 @@ Please send any comments or bugs to $reply
         sender=f"{email.first_name} {email.last_name}",
         sender_email=email.email_address,
         files="\n".join(files),
-        message=email.message,
+        message=re.sub(r"^https?:\/\/.*[\r\n]*", "[link not allowed]", email.message, flags=re.MULTILINE),
         reply=app_settings.FROM_EMAIL,
         appname=app_settings.APP_NAME,
         days=app_settings.UPLOAD_EXPIRATION_DAYS,
