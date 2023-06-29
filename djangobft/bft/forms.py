@@ -42,11 +42,10 @@ class MultiValueField(fields.Field):
             raise ValidationError(self.error_messages["required"])
         result = []
         errors = []
-        for i, value in enumerate(values):
+        for value in values:
             try:
-                if i > 0 and value.strip() == "":
-                    continue
-                result.append(self.subfield.clean(value.lower()))
+                if value and value.strip() != "":
+                    result.append(self.subfield.clean(value.lower()))
             except ValidationError as e:
                 errors.append((e.message, i, value))
         if len(errors):
