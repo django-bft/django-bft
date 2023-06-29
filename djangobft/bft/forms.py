@@ -50,7 +50,7 @@ class MultiValueField(fields.Field):
                 errors.append((e.message, i, value))
         if len(errors):
             raise MultiValueValidationError(errors)
-        return result
+        return result if result else ""
 
 
 class EmailForm(forms.ModelForm):
