@@ -1,0 +1,329 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>bft.views &mdash; django-bft - A Big File Transfer App Written in Django v0.1 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="django-bft - A Big File Transfer App Written in Django v0.1 documentation" href="index.html" />
+    <link rel="next" title="bft.models" href="models.html" />
+    <link rel="prev" title="Welcome to django-bft - A Big File Transfer App Written in Django’s documentation!" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="models.html" title="bft.models"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to django-bft - A Big File Transfer App Written in Django’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">django-bft - A Big File Transfer App Written in Django v0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-bft.views">
+<span id="bft-views"></span><h1>bft.views<a class="headerlink" href="#module-bft.views" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="bft.views.display_about">
+<tt class="descclassname">bft.views.</tt><tt class="descname">display_about</tt><big>(</big><em>request</em>, <em>use_flash=True</em><big>)</big><a class="headerlink" href="#bft.views.display_about" title="Permalink to this definition">¶</a></dt>
+<dd><p>View that displays about page.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Return :</th><td class="field-body">render_to_response</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="bft.views.display_index">
+<tt class="descclassname">bft.views.</tt><tt class="descname">display_index</tt><big>(</big><em>request</em>, <em>use_flash=True</em><big>)</big><a class="headerlink" href="#bft.views.display_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>View that displays main page.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Return :</th><td class="field-body">render_to_response</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="bft.views.get_file">
+<tt class="descclassname">bft.views.</tt><tt class="descname">get_file</tt><big>(</big><em>request</em>, <em>file_slug=None</em>, <em>file_name=None</em><big>)</big><a class="headerlink" href="#bft.views.get_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends a file to the borwser for download.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Return :</th><td class="field-body">HttpResponse</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="bft.views.html_progress">
+<tt class="descclassname">bft.views.</tt><tt class="descname">html_progress</tt><big>(</big><em>request</em><big>)</big><a class="headerlink" href="#bft.views.html_progress" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function that is used by the &#8216;no flash&#8217; version.
+jQuery uses this via ajax to poll the progress at a set interval.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Return :</th><td class="field-body">JsonResponse with information about the progress of an upload.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="bft.views.list_files">
+<tt class="descclassname">bft.views.</tt><tt class="descname">list_files</tt><big>(</big><em>request</em>, <em>submission_slug=None</em>, <em>use_flash=True</em><big>)</big><a class="headerlink" href="#bft.views.list_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Outputs all the files for a submission.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Return :</th><td class="field-body">render_to_response</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="bft.views.login">
+<tt class="descclassname">bft.views.</tt><tt class="descname">login</tt><big>(</big><em>request</em><big>)</big><a class="headerlink" href="#bft.views.login" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>USU Specific</strong></p>
+<p>Processes login for USU credential by setting a session token &#8216;bft_auth&#8217;
+in the session scope.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Return :</th><td class="field-body">Void</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="bft.views.process_recipients">
+<tt class="descclassname">bft.views.</tt><tt class="descname">process_recipients</tt><big>(</big><em>submission</em>, <em>files</em><big>)</big><a class="headerlink" href="#bft.views.process_recipients" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function that processes recipients and emails them a link to the file(s)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Return :</th><td class="field-body">Void</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="bft.views.process_sender">
+<tt class="descclassname">bft.views.</tt><tt class="descname">process_sender</tt><big>(</big><em>submission</em>, <em>files</em>, <em>has_email=False</em><big>)</big><a class="headerlink" href="#bft.views.process_sender" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function that processes sender and emails them with a link(s) to their files</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Return :</th><td class="field-body">Void</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="bft.views.process_submission">
+<tt class="descclassname">bft.views.</tt><tt class="descname">process_submission</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#bft.views.process_submission" title="Permalink to this definition">¶</a></dt>
+<dd><p>Processes the submission and returns back to the browser.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Return :</th><td class="field-body">HttpResponse</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="bft.views.render_vars">
+<tt class="descclassname">bft.views.</tt><tt class="descname">render_vars</tt><big>(</big><em>request</em>, <em>use_flash=True</em><big>)</big><a class="headerlink" href="#bft.views.render_vars" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renders settings into a javascript file that can be read by the browser.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Return :</th><td class="field-body">render_to_response</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="bft.views.send_feedback">
+<tt class="descclassname">bft.views.</tt><tt class="descname">send_feedback</tt><big>(</big><em>request</em><big>)</big><a class="headerlink" href="#bft.views.send_feedback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Processes submission from feedback forms and emails Django admins.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Return :</th><td class="field-body">HttpResponse of 0 or 1</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="bft.views.submit_captcha">
+<tt class="descclassname">bft.views.</tt><tt class="descname">submit_captcha</tt><big>(</big><em>request</em><big>)</big><a class="headerlink" href="#bft.views.submit_captcha" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function that calls reCaptcha&#8217;s webservice to determine if
+correct or not.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Return :</th><td class="field-body">HttpResponse of 0 or 1</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="bft.views.upload_flash">
+<tt class="descclassname">bft.views.</tt><tt class="descname">upload_flash</tt><big>(</big><em>request</em><big>)</big><a class="headerlink" href="#bft.views.upload_flash" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function that processes the file upload.  Used by flash player.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Return :</th><td class="field-body">HttpResponse of 0 or 1</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="bft.views.upload_html">
+<tt class="descclassname">bft.views.</tt><tt class="descname">upload_html</tt><big>(</big><em>request</em>, <em>submission</em><big>)</big><a class="headerlink" href="#bft.views.upload_html" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function that processes the file upload.  Used by the &#8216;no flash&#8217; version.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Return :</th><td class="field-body">Void</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="bft.views.use_captcha">
+<tt class="descclassname">bft.views.</tt><tt class="descname">use_captcha</tt><big>(</big><em>request</em><big>)</big><a class="headerlink" href="#bft.views.use_captcha" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to check whether or not to use reCaptcha.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Return :</th><td class="field-body">True or False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to django-bft - A Big File Transfer App Written in Django&#8217;s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="models.html"
+                        title="next chapter">bft.models</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/views.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="models.html" title="bft.models"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to django-bft - A Big File Transfer App Written in Django’s documentation!"
+             >previous</a> |</li>
+        <li><a href="index.html">django-bft - A Big File Transfer App Written in Django v0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Jay McEntire.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

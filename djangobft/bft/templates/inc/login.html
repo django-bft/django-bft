@@ -1,0 +1,10 @@
+<h2>Authentication is required to download these file(s).</h2>
+<p class="lead">To download these files, please enter in your A-number and strong password.</p>
+{% if invalid_credentials %}
+<div class="error">
+	Either the A-number or password typed in is invalid.  Please try again.
+</div>
+{% endif %}
+<div id="steps-submit">
+	<a href="{% url 'login' %}?next={{ request.path }}" class="top10 text-lg">Login with {{ saml2_authority }}</a>
+</div>
