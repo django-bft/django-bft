@@ -1,0 +1,129 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>bft.models &mdash; django-bft - A Big File Transfer App Written in Django v0.1 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="django-bft - A Big File Transfer App Written in Django v0.1 documentation" href="index.html" />
+    <link rel="prev" title="bft.views" href="views.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="views.html" title="bft.views"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">django-bft - A Big File Transfer App Written in Django v0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-bft.models">
+<span id="bft-models"></span><h1>bft.models<a class="headerlink" href="#module-bft.models" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="bft.models.Email">
+<em class="property">class </em><tt class="descclassname">bft.models.</tt><tt class="descname">Email</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#bft.models.Email" title="Permalink to this definition">¶</a></dt>
+<dd><p>Email(id, type, slug, email_address, anumbers, submit_ip, submit_date, is_archived, email_sent, browser_meta, submission_ptr_id, first_name, last_name, recipients, message)</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="bft.models.File">
+<em class="property">class </em><tt class="descclassname">bft.models.</tt><tt class="descname">File</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#bft.models.File" title="Permalink to this definition">¶</a></dt>
+<dd><p>File(id, submission_id, slug, file_upload, file_size)</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="bft.models.FileArchive">
+<em class="property">class </em><tt class="descclassname">bft.models.</tt><tt class="descname">FileArchive</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#bft.models.FileArchive" title="Permalink to this definition">¶</a></dt>
+<dd><p>FileArchive(id, submission_id, file_upload, submit_date, delete_date)</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="bft.models.Submission">
+<em class="property">class </em><tt class="descclassname">bft.models.</tt><tt class="descname">Submission</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#bft.models.Submission" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submission(id, type, slug, email_address, anumbers, submit_ip, submit_date, is_archived, email_sent, browser_meta)</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="views.html"
+                        title="previous chapter">bft.views</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/models.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="views.html" title="bft.views"
+             >previous</a> |</li>
+        <li><a href="index.html">django-bft - A Big File Transfer App Written in Django v0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Jay McEntire.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

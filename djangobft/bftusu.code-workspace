@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		}
+	],
+	"settings": {
+		"python.envFile": "${workspaceFolder}/.venv",
+		"editor.formatOnSave": true
+	}
+}

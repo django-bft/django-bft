@@ -1,0 +1,97 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>Big File Transfer | USU</title>
+	
+		<meta name="keywords" content="" />
+		<meta name="description" content="" />
+
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Oxygen:wght@300;400;700&display=swap" rel="stylesheet"> 
+		<link rel="icon" type="image/x-icon" href="{% static 'bft/images/favicon.ico' %}"/>
+
+		<link href="{% static 'bft/styles/main.css' %}" rel="stylesheet" type="text/css" />
+		<link href="{% static 'bft/styles/jquery-ui-1.8.1.bft.css' %}" rel="stylesheet" type="text/css" />
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js" type="text/javascript"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/jquery-ui.min.js" type="text/javascript"></script>
+
+		<script src="https://kit.fontawesome.com/906d543be9.js" crossorigin="anonymous"></script>
+
+		{% block meta %}
+		{% endblock %}
+		
+		<script type="text/javascript">
+		  var _gaq = _gaq || [];
+		  _gaq.push(['_setAccount', 'UA-16805034-1']);
+		  _gaq.push(['_setDomainName', 'none']);
+		  _gaq.push(['_setAllowLinker', true]);
+		  _gaq.push(['_trackPageview']);
+		
+		  (function() {
+		    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		  })();
+		</script>
+		
+		
+	</head>
+
+	<body>
+		<noscript><div id="warning">Note: This site requires JavaScript enabled to function properly.</div></noscript>
+		<div id="container">
+			<div id="header">
+				<div id="usu-logo">
+					<a href="http://www.usu.edu"><img src="{% static 'bft/images/usu-logo.png' %}" width="307" height="32" border="0" alt="Utah State University" /></a>
+				</div>
+				<div id="usu-nav">
+					<ul>
+						<li><a href="http://www.usu.edu/">USU Home</a></li>
+						<li><a href="http://www.usu.edu/azindex/">A-Z Index</a></li>
+				        <li><a href="http://www.usu.edu/myusu/">MyUSU</a></li>
+						<li><a href="http://www.usu.edu/calendar/">Calendars</a></li>
+				        <li><a href="http://www.usu.edu/directory/">Directory</a></li>
+						<li><a href="http://www.usu.edu/contact/">Contact</a></li>
+					</ul>
+				</div>
+			</div>
+			<div id="nav">
+				<div id="how-upload">How would you like to distribute your file?</div>
+				<div id="tabs">
+					<ul>
+						<li id="li-link">
+							<a href="{% url 'index' %}#link" id="tab-link"><i class="fa-solid fa-link text-lg"></i> Link</a>
+							<div class="nav-border link-border"><!-- --></div>
+						</li>
+						<li id="li-email">
+							<a href="{% url 'index' %}#email" id="tab-email" class="active"><i class="fa-solid fa-envelope text-lg"></i> Email</a>
+							<div class="nav-border"><!-- --></div>
+						</li>
+					</ul>
+				</div>
+				<div id="logo">
+					<a id="logo" href="{% url 'index' %}"><img src="{% static 'bft/images/logo-bft.png' %}" alt="Big File Transer" width="375" height="53"/></a>
+				</div>
+			</div>
+			<div id="main">
+				<div id="content">
+					{% block content %}{% endblock %}
+					<div style="clear: both"><!-- --></div>
+				</div>
+				<div id="nav-bottom">
+					<ul>
+						<li><a href="{% url 'about' %}">About BFT</a></li>
+						<li><a href="http://it.usu.edu">IT Homepage</a></li>
+					</ul>
+				</div>
+				<!--<div id="content-bottom"></div>-->
+			</div>			
+		</div>
+		
+		{% block script %}{% endblock %}		
+	</body>
+</html>

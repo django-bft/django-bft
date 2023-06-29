@@ -1,0 +1,56 @@
+version: '3'
+services:
+  django:
+    container_name: django
+    build:
+      context: .
+      dockerfile: django.Dockerfile
+    command: sh -c "python manage.py migrate && python manage.py collectstatic --no-input && python manage.py runserver 0.0.0.0:8000"
+    image: ${DOCKER_IMAGE_NAME}
+    volumes:
+      - .:/code
+    # ports:
+    #   - 8000:8000
+    networks:
+      - bft_network
+    env_file:
+      - .env
+    depends_on:
+      - db
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    build:
+      context: .
+      dockerfile: nginx.Dockerfile
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./nginx/fullchain.pem:/etc/letsencrypt/live/fullchain.pem
+      - ./nginx/privkey.pem:/etc/letsencrypt/live/privkey.pem
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/log:/var/log/nginx
+      - ./files:/code/files
+      - ./static:/code/static
+    networks:
+      - bft_network
+    depends_on:
+      - django
+    env_file:
+      - .env
+  db:
+    image: postgres:latest
+    container_name: db
+    # ports:
+    #   - "5432:5432"
+    env_file:
+      - .env
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    networks:
+      - bft_network
+
+networks:
+  bft_network:
