@@ -3,12 +3,15 @@ import os
 from pathlib import Path
 from decouple import config
 
+LOCAL = config("LOCAL", default=False, cast=bool)
 
 SERVER_NAME = config("SERVER_NAME", default="localhost")
 
 ADMINS = ast.literal_eval(config("ADMINS", default="[]"))
-
-ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="['*']").split(",")
+if LOCAL: #allow local host plus config hosts
+    ALLOWED_HOSTS = ['localhost']
+else:
+    ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="['*']").split(",")
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -71,17 +74,24 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "djangobft.wsgi.application"
 
-
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": config("POSTGRES_DB"),
-        "USER": config("POSTGRES_USER"),
-        "PASSWORD": config("POSTGRES_PASSWORD"),
-        "HOST": "db",
-        "PORT": "5432",
+if LOCAL:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": config("POSTGRES_DB"),
+            "USER": config("POSTGRES_USER"),
+            "PASSWORD": config("POSTGRES_PASSWORD"),
+            "HOST": "db",
+            "PORT": "5432",
+        }
+    }
 
 CACHES = {
     "default": {

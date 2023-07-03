@@ -21,12 +21,32 @@ The site can be viewed at https://bft.usu.edu
 Requirements
 ------------
 
-TODO
+- Django4.x
+- Postgres and/or sqlite3
+- Docker (if using postgres, recommended in production)
+- Poetry
+- Python3.9 or higher
 	
 
 Installation
 ------------
+1. Clone the repo
+2. Install requirements
+3. Create a virtual environment - 'poetry shell'
+4. Create a '.env' file from '.env.example', fill out blank fields.
+   * SECRET_KEY can be created with python:
+        ```
+        import secrets
+        print(secrets.token_urlsafe(15))
+        ```
 
-TODO
+5. Run 'poetry install'
+
+IF USING DOCKER + postgres (recommended in production)
+6. Run 'docker compose up --build'
+
+IF USING LOCAL + sqlite3
+6. Run 'python manage.py migrate'
+7. Run 'python manage.py runserver'
 	
 __ https://github.com/django-bft/dango-bft/downloads
