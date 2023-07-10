@@ -40,13 +40,13 @@ Installation
         print(secrets.token_urlsafe(15))
         ```
 
-5. Run 'poetry install'
+5. Run 'poetry install' to install dependencies
+6. Run 'python manage.py migrate' to create database tables
 
 IF USING DOCKER + postgres (recommended in production)
-6. Run 'docker compose up --build'
+7. Run 'docker compose up --build'
 
-IF USING LOCAL + sqlite3
-6. Run 'python manage.py migrate'
+IF RUNNING LOCALLY WITH sqlite3
 7. Run 'python manage.py runserver'
 	
 __ https://github.com/django-bft/dango-bft/downloads
