@@ -4,6 +4,11 @@ from pathlib import Path
 from decouple import config
 
 
+try:
+    from .local_settings import *  # noqa: F403,F401
+except ImportError:
+    pass
+
 SERVER_NAME = config("SERVER_NAME", default="localhost")
 
 ADMINS = ast.literal_eval(config("ADMINS", default="[]"))
