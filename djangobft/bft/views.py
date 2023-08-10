@@ -93,7 +93,7 @@ def get_file(request, file_slug=None, file_name=None):
 
         if submission.anumbers:
             bft_auth = request.session.get("bft_auth")
-            if bft_auth and bft_auth.lower() == submission.anumbers:
+            if bft_auth and bft_auth.lower() in submission.anumbers:
                 return response
             else:
                 return HttpResponseRedirect(reverse("files", args=[submission.slug]))
