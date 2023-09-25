@@ -1,4 +1,4 @@
 #!/bin/sh
 
-/code/manage.py deleteuploads
-/code/manage.py deletetempfiles
+docker exec -it django sh -c "/code/manage.py deleteuploads"
+docker exec -it django sh -c "/code/manage.py deletetempfiles"

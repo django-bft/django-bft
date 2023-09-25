@@ -43,7 +43,7 @@ class Command(BaseCommand):
         for dir in files_dir:
             if dir != date_dir:
                 dir_temp = settings.MEDIA_ROOT + app_settings.FILE_UPLOAD_DIR + "/" + dir
-                if not os.listdir(dir_temp):
+                if os.path.isdir(dir_temp) and not os.listdir(dir_temp):
                     os.rmdir(dir_temp)
                     stdout.write("Empty directory %s was deleted.\n" % dir_temp)
 
